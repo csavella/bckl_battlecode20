@@ -1,9 +1,12 @@
-package examplefuncsplayer;
+package SmackDat;
 import battlecode.common.*;
 
 // Hello, testing if we can merge
 
 public strictfp class RobotPlayer {
+
+    static int numberOfMiners = 0;
+
     static RobotController rc;
 
     static Direction[] directions = {
@@ -66,7 +69,12 @@ public strictfp class RobotPlayer {
 
     static void runHQ() throws GameActionException {
         for (Direction dir : directions)
-            tryBuild(RobotType.MINER, dir);
+            if (numberOfMiners++ > 1){
+                break;
+            } else {
+                tryBuild(RobotType.MINER, dir);
+            }
+
     }
 
     static void runMiner() throws GameActionException {
@@ -78,6 +86,8 @@ public strictfp class RobotPlayer {
         for (Direction dir : directions)
             tryBuild(RobotType.FULFILLMENT_CENTER, dir);
         for (Direction dir : directions)
+            tryBuild(RobotType.REFINERY, dir);
+        for (Direction dir : directions)
             if (tryRefine(dir))
                 System.out.println("I refined soup! " + rc.getTeamSoup());
         for (Direction dir : directions)
@@ -86,7 +96,7 @@ public strictfp class RobotPlayer {
     }
 
     static void runRefinery() throws GameActionException {
-        // System.out.println("Pollution: " + rc.sensePollution(rc.getLocation()));
+        System.out.println("Pollution: " + rc.sensePollution(rc.getLocation()));
     }
 
     static void runVaporator() throws GameActionException {
