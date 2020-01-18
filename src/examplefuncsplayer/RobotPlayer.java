@@ -1,8 +1,6 @@
 package examplefuncsplayer;
 import battlecode.common.*;
 
-// Hello, testing if we can merge
-
 public strictfp class RobotPlayer {
     static RobotController rc;
 
