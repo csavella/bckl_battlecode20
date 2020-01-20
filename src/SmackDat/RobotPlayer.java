@@ -7,6 +7,8 @@ import battlecode.common.*;
 public strictfp class RobotPlayer {
 
     static int numberOfMiners = 0;
+    static int numberOfDesignSchools = 0;
+    static int numberOfLandscapers = 0;
 
     static RobotController rc;
 
@@ -88,6 +90,15 @@ public strictfp class RobotPlayer {
             tryBuild(RobotType.FULFILLMENT_CENTER, dir);
         for (Direction dir : directions)
             tryBuild(RobotType.REFINERY, dir);
+
+        if(numberOfDesignSchools < 1) {
+            for (Direction dir : directions)
+                if (tryBuild(RobotType.DESIGN_SCHOOL, dir)) {
+                    numberOfDesignSchools++;
+                    break;
+                }
+        }
+
         for (Direction dir : directions)
             if (tryRefine(dir))
                 System.out.println("I refined soup! " + rc.getTeamSoup());
@@ -105,6 +116,12 @@ public strictfp class RobotPlayer {
     }
 
     static void runDesignSchool() throws GameActionException {
+        for (Direction dir : directions)
+            if (numberOfLandscapers++ > 1){
+                break;
+            } else {
+                tryBuild(RobotType.LANDSCAPER, dir);
+            }
 
     }
 
