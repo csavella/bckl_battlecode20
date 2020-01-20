@@ -2,6 +2,7 @@ package SmackDat;
 import battlecode.common.*;
 
 // Hello, testing if we can merge
+// Test 2
 
 public strictfp class RobotPlayer {
 
