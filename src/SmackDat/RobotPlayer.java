@@ -91,6 +91,7 @@ public strictfp class RobotPlayer {
         for (Direction dir : directions)
             tryBuild(RobotType.REFINERY, dir);
 
+        //Currently will only make a max of 1 Design Schools
         if(numberOfDesignSchools < 1) {
             for (Direction dir : directions)
                 if (tryBuild(RobotType.DESIGN_SCHOOL, dir)) {
@@ -115,6 +116,7 @@ public strictfp class RobotPlayer {
 
     }
 
+    //Currently will only make a max of 1 landscapers
     static void runDesignSchool() throws GameActionException {
         for (Direction dir : directions)
             if (numberOfLandscapers++ > 1){
