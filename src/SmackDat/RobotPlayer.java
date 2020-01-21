@@ -71,12 +71,24 @@ public strictfp class RobotPlayer {
     }
 
     static void runHQ() throws GameActionException {
-        for (Direction dir : directions)
-            if (numberOfMiners++ > 1){
+        for (Direction dir : directions) {
+            if (numberOfMiners++ > 1) {
                 break;
             } else {
                 tryBuild(RobotType.MINER, dir);
             }
+        }
+        //Sense all robots near the HQ, if there is a drone from the enemy team in the radius,
+        //Shoot it down
+        Team myTeamColor = rc.getTeam();
+        RobotInfo [] nearbyRobots = rc.senseNearbyRobots();
+        for(RobotInfo r : nearbyRobots){
+            // TEST: System.out.println("Robot nearby");
+            if(r.team == myTeamColor && rc.canShootUnit(r.ID))
+                rc.shootUnit(r.ID);
+
+
+        }
 
     }
 
