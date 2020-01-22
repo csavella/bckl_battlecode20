@@ -1,6 +1,7 @@
 package SmackDat;
 import battlecode.common.*;
 
+
 // Hello, testing if we can merge
 // Test 2
 
@@ -9,6 +10,7 @@ public strictfp class RobotPlayer {
     static int numberOfMiners = 0;
     static int numberOfDesignSchools = 0;
     static int numberOfLandscapers = 0;
+    static MapLocation HQLocation;
 
     static RobotController rc;
 
@@ -71,6 +73,12 @@ public strictfp class RobotPlayer {
     }
 
     static void runHQ() throws GameActionException {
+
+        if(HQLocation == null){
+            HQLocation = rc.getLocation();
+            System.out.println("Map Location set at: " + HQLocation.x + ", " + HQLocation.y);
+        }
+
         for (Direction dir : directions) {
             if (numberOfMiners++ > 1) {
                 break;
@@ -98,8 +106,13 @@ public strictfp class RobotPlayer {
         if (tryMove(randomDirection()))
             System.out.println("I moved!");
         // tryBuild(randomSpawnedByMiner(), randomDirection());
+
+        //COMMENTING THIS OUT FOR NOW SO I CAN QUICKLY MAKE DESIGN SCHOOLS AND LANDSCAPERS
+        /*
         for (Direction dir : directions)
             tryBuild(RobotType.FULFILLMENT_CENTER, dir);
+
+         */
         for (Direction dir : directions)
             tryBuild(RobotType.REFINERY, dir);
 
@@ -133,8 +146,11 @@ public strictfp class RobotPlayer {
         for (Direction dir : directions)
             if (numberOfLandscapers++ > 1){
                 break;
-            } else {
-                tryBuild(RobotType.LANDSCAPER, dir);
+            }
+            else {
+                if(tryBuild(RobotType.LANDSCAPER, dir)){
+                    numberOfLandscapers++;
+                }
             }
 
     }
@@ -144,8 +160,103 @@ public strictfp class RobotPlayer {
             tryBuild(RobotType.DELIVERY_DRONE, dir);
     }
 
+    //For now the landscaper just hunts down our HQ, then circles it building a wall around it
     static void runLandscaper() throws GameActionException {
 
+        if(notAtHQ(HQLocation, rc.getLocation())){
+            //navigateTo or some version of it needs to be implemented using a pathfinding algorithm eventually,
+            //probably Djikstras or A*, Im just sticking a bandaid here for now
+            navigateTo(HQLocation, rc.getLocation());
+        }
+
+        else{
+            //Figure out which of the 8 squares around the HQ it's on, so it knows where to take dirt from
+            //and where to place dirt at and then move to
+            MapLocation currentLocation = rc.getLocation();
+            Direction directionFromHQ = Direction.NORTH;
+
+            for(Direction d: directions){
+                if(currentLocation.equals(HQLocation.add(d))){
+                    //TEST
+                    System.out.println("Landscaper is currently " + d + " of HQ.");
+                    directionFromHQ = d;
+                    break;
+                }
+            }
+
+            //If it doesn't have any dirt, pick up the dirt from a non-wall area
+            if(rc.getDirtCarrying() == 0)
+            switch(directionFromHQ){
+                case NORTH:     rc.digDirt(Direction.NORTH);
+                case NORTHWEST: rc.digDirt(Direction.NORTH);
+                case WEST:      rc.digDirt(Direction.WEST);
+                case SOUTHWEST: rc.digDirt(Direction.WEST);
+                case SOUTH:     rc.digDirt(Direction.SOUTH);
+                case SOUTHEAST: rc.digDirt(Direction.SOUTH);
+                case EAST:      rc.digDirt(Direction.EAST);
+                case NORTHEAST: rc.digDirt(Direction.EAST);
+            }
+
+            //Drop the dirt at a wall area, then move onto that square
+            if(rc.getDirtCarrying() != 0) {
+                switch (directionFromHQ) {
+                    case NORTH: {
+                        rc.depositDirt(Direction.WEST);
+                        rc.move(Direction.WEST);
+                    }
+                    case NORTHWEST: {
+                        rc.depositDirt(Direction.SOUTH);
+                        rc.move(Direction.SOUTH);
+                    }
+                    case WEST: {
+                        rc.depositDirt(Direction.SOUTH);
+                        rc.move(Direction.SOUTH);
+                    }
+                    case SOUTHWEST: {
+                        rc.depositDirt(Direction.EAST);
+                        rc.move(Direction.EAST);
+                    }
+                    case SOUTH: {
+                        rc.depositDirt(Direction.EAST);
+                        rc.move(Direction.EAST);
+                    }
+                    case SOUTHEAST: {
+                        rc.depositDirt(Direction.NORTH);
+                        rc.move(Direction.NORTH);
+                    }
+                    case EAST: {
+                        rc.depositDirt(Direction.NORTH);
+                        rc.move(Direction.NORTH);
+                    }
+                    case NORTHEAST: {
+                        rc.depositDirt(Direction.WEST);
+                        rc.move(Direction.WEST);
+                    }
+                }
+            }
+        }
+    }
+
+    //Pass it MapLocation and the robot's current location
+    //Checks all directions from the robots location, if 1 is the HQlocation, then return true
+    //Otherwise returns false
+    static boolean notAtHQ(MapLocation HQLocation, MapLocation robotLocation){
+        for(Direction d : directions)
+            if(rc.getLocation().add(d).equals(HQLocation)) return true;
+
+        return false;
+    }
+
+    //Tries to move closer to the HQLocation, throws GameActionException
+    //This should never throw an error
+    static void navigateTo(MapLocation HQLocation, MapLocation robotLocation){
+        try {
+            rc.move(robotLocation.directionTo(HQLocation));
+        }
+
+        catch (GameActionException e){
+            System.out.println("Landscaper tried to move using navigateTo and failed.\n" + e.getMessage());
+        }
     }
 
     static void runDeliveryDrone() throws GameActionException {
