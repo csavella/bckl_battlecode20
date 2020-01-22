@@ -86,7 +86,7 @@ public strictfp class RobotPlayer {
             sendHQLocation(rc.getLocation());
 
         for (Direction dir : directions) {
-            if (numberOfMiners > 4) {
+            if (numberOfMiners > 1) {
                 break;
             } else {
                 if(tryBuild(RobotType.MINER, dir))
