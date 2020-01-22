@@ -10,7 +10,7 @@ public strictfp class RobotPlayer {
     static int numberOfMiners = 0;
     static int numberOfDesignSchools = 0;
     static int numberOfLandscapers = 0;
-    static MapLocation HQLocation;
+    static int secretTeamKey = 937487;
 
     static RobotController rc;
 
@@ -74,10 +74,8 @@ public strictfp class RobotPlayer {
 
     static void runHQ() throws GameActionException {
 
-        if(HQLocation == null){
-            HQLocation = rc.getLocation();
-            System.out.println("Map Location set at: " + HQLocation.x + ", " + HQLocation.y);
-        }
+        if(rc.getRoundNum() < 5)
+            sendHQLocation();
 
         for (Direction dir : directions) {
             if (numberOfMiners++ > 1) {
@@ -98,6 +96,24 @@ public strictfp class RobotPlayer {
 
         }
 
+    }
+
+    static void sendHQLocation(){
+        int[] message = new int[7];
+
+
+    }
+
+    static MapLocation getHQLocation() throws GameActionException {
+        for(int i = 0; i<5; i++){
+            for(Transaction t : rc.getBlock(i)){
+                int[] message = t.getMessage();
+                if(message[0] == secretTeamKey && message[1] == 0){
+                    return new MapLocation(message[2], message[3]);
+                }
+            }
+        }
+        return new MapLocation[1, 1];
     }
 
     static void runMiner() throws GameActionException {
