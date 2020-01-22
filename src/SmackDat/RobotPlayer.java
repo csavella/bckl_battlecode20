@@ -86,10 +86,11 @@ public strictfp class RobotPlayer {
             sendHQLocation(rc.getLocation());
 
         for (Direction dir : directions) {
-            if (numberOfMiners++ > 1) {
+            if (numberOfMiners > 4) {
                 break;
             } else {
-                tryBuild(RobotType.MINER, dir);
+                if(tryBuild(RobotType.MINER, dir))
+                    numberOfMiners++;
             }
         }
         //Sense all robots near the HQ, if there is a drone from the enemy team in the radius,
