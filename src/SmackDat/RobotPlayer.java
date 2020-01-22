@@ -1,7 +1,6 @@
 package SmackDat;
 import battlecode.common.*;
 
-
 // Hello, testing if we can merge
 // Test 2
 
@@ -10,19 +9,21 @@ public strictfp class RobotPlayer {
     static int numberOfMiners = 0;
     static int numberOfDesignSchools = 0;
     static int numberOfLandscapers = 0;
-    static int secretTeamKey = 937487;
+
+    static final int secretTeamKey = 729384;
+
 
     static RobotController rc;
 
     static Direction[] directions = {
-        Direction.NORTH,
-        Direction.NORTHEAST,
-        Direction.EAST,
-        Direction.SOUTHEAST,
-        Direction.SOUTH,
-        Direction.SOUTHWEST,
-        Direction.WEST,
-        Direction.NORTHWEST
+            Direction.NORTH,
+            Direction.NORTHEAST,
+            Direction.EAST,
+            Direction.SOUTHEAST,
+            Direction.SOUTH,
+            Direction.SOUTHWEST,
+            Direction.WEST,
+            Direction.NORTHWEST
     };
     static RobotType[] spawnedByMiner = {RobotType.REFINERY, RobotType.VAPORATOR, RobotType.DESIGN_SCHOOL,
             RobotType.FULFILLMENT_CENTER, RobotType.NET_GUN};
@@ -49,7 +50,7 @@ public strictfp class RobotPlayer {
             try {
                 // Here, we've separated the controls into a different method for each RobotType.
                 // You can add the missing ones or rewrite this into your own control structure.
-                System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
+                //System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
                 switch (rc.getType()) {
                     case HQ:                 runHQ();                break;
                     case MINER:              runMiner();             break;
@@ -74,8 +75,15 @@ public strictfp class RobotPlayer {
 
     static void runHQ() throws GameActionException {
 
+        /*
+        if(hqLocation == null) {
+            MapLocation t = rc.getLocation();
+            hqLocation = new MapLocation(t.x, t.y);
+            System.out.println("Map location set at " + t.x + ", " + t.y);
+        }
+        */
         if(rc.getRoundNum() < 5)
-            sendHQLocation();
+            sendHQLocation(rc.getLocation());
 
         for (Direction dir : directions) {
             if (numberOfMiners++ > 1) {
@@ -98,22 +106,35 @@ public strictfp class RobotPlayer {
 
     }
 
-    static void sendHQLocation(){
-        int[] message = new int[7];
+    public static void sendHQLocation(MapLocation loc) throws GameActionException{
+        int [] message = new int[7];
+
+
+        message[0] = secretTeamKey;
+        message[1] = 0;
+        message[2] = loc.x;
+        message[3] = loc.y;
+
+        if(rc.canSubmitTransaction(message, 2))
+            rc.submitTransaction(message, 2);
 
 
     }
 
-    static MapLocation getHQLocation() throws GameActionException {
-        for(int i = 0; i<5; i++){
+    //Scan the whole blockchain from round 1 for our HQ message announcing the HQ location
+    //Return 1,1 MapLocation if for some reason we never broadcast our location
+    public static MapLocation getHQLocation() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++){
             for(Transaction t : rc.getBlock(i)){
                 int[] message = t.getMessage();
                 if(message[0] == secretTeamKey && message[1] == 0){
+                    System.out.println("I got a message");
                     return new MapLocation(message[2], message[3]);
                 }
             }
         }
-        return new MapLocation[1, 1];
+
+        return new MapLocation(1, 1);
     }
 
     static void runMiner() throws GameActionException {
@@ -122,15 +143,13 @@ public strictfp class RobotPlayer {
         if (tryMove(randomDirection()))
             System.out.println("I moved!");
         // tryBuild(randomSpawnedByMiner(), randomDirection());
-
-        //COMMENTING THIS OUT FOR NOW SO I CAN QUICKLY MAKE DESIGN SCHOOLS AND LANDSCAPERS
-        /*
         for (Direction dir : directions)
             tryBuild(RobotType.FULFILLMENT_CENTER, dir);
 
-         */
         for (Direction dir : directions)
             tryBuild(RobotType.REFINERY, dir);
+
+
 
         //Currently will only make a max of 1 Design Schools
         if(numberOfDesignSchools < 1) {
@@ -160,13 +179,10 @@ public strictfp class RobotPlayer {
     //Currently will only make a max of 1 landscapers
     static void runDesignSchool() throws GameActionException {
         for (Direction dir : directions)
-            if (numberOfLandscapers++ > 1){
+            if (numberOfLandscapers > 0){
                 break;
-            }
-            else {
-                if(tryBuild(RobotType.LANDSCAPER, dir)){
-                    numberOfLandscapers++;
-                }
+            } else {
+                tryBuild(RobotType.LANDSCAPER, dir);
             }
 
     }
@@ -176,92 +192,103 @@ public strictfp class RobotPlayer {
             tryBuild(RobotType.DELIVERY_DRONE, dir);
     }
 
-    //For now the landscaper just hunts down our HQ, then circles it building a wall around it
     static void runLandscaper() throws GameActionException {
+        MapLocation HQLocation = getHQLocation();
 
-        if(notAtHQ(HQLocation, rc.getLocation())){
-            //navigateTo or some version of it needs to be implemented using a pathfinding algorithm eventually,
-            //probably Djikstras or A*, Im just sticking a bandaid here for now
-            navigateTo(HQLocation, rc.getLocation());
-        }
+        if(rc.isReady()) {
+            if (!rc.getLocation().isAdjacentTo(HQLocation)) {
+                //navigateTo or some version of it needs to be implemented using a pathfinding algorithm eventually,
+                //probably Djikstras or A*, Im just sticking a bandaid here for now
+                //navigateTo(HQLocation, rc.getLocation());
+                Direction t = rc.getLocation().directionTo(HQLocation);
+                System.out.println("hi");
+                rc.move(rc.getLocation().directionTo(HQLocation));
+            }
+            else {
+                //Figure out which of the 8 squares around the HQ it's on, so it knows where to take dirt from
+                //and where to place dirt at and then move to
+                MapLocation currentLocation = rc.getLocation();
+                Direction directionFromHQ = null;
 
-        else{
-            //Figure out which of the 8 squares around the HQ it's on, so it knows where to take dirt from
-            //and where to place dirt at and then move to
-            MapLocation currentLocation = rc.getLocation();
-            Direction directionFromHQ = Direction.NORTH;
-
-            for(Direction d: directions){
-                if(currentLocation.equals(HQLocation.add(d))){
-                    //TEST
-                    System.out.println("Landscaper is currently " + d + " of HQ.");
-                    directionFromHQ = d;
-                    break;
+                for (Direction d : directions) {
+                    if (currentLocation.equals(HQLocation.add(d))) {
+                        //TEST
+                        System.out.println("Landscaper is currently " + d + " of HQ.");
+                        directionFromHQ = d;
+                        break;
+                    }
                 }
-            }
 
-            //If it doesn't have any dirt, pick up the dirt from a non-wall area
-            if(rc.getDirtCarrying() == 0)
-            switch(directionFromHQ){
-                case NORTH:     rc.digDirt(Direction.NORTH);
-                case NORTHWEST: rc.digDirt(Direction.NORTH);
-                case WEST:      rc.digDirt(Direction.WEST);
-                case SOUTHWEST: rc.digDirt(Direction.WEST);
-                case SOUTH:     rc.digDirt(Direction.SOUTH);
-                case SOUTHEAST: rc.digDirt(Direction.SOUTH);
-                case EAST:      rc.digDirt(Direction.EAST);
-                case NORTHEAST: rc.digDirt(Direction.EAST);
-            }
+                Direction nextDirection;
 
-            //Drop the dirt at a wall area, then move onto that square
-            if(rc.getDirtCarrying() != 0) {
-                switch (directionFromHQ) {
-                    case NORTH: {
-                        rc.depositDirt(Direction.WEST);
-                        rc.move(Direction.WEST);
+                switch(directionFromHQ){
+                    case NORTH:
+                        nextDirection = Direction.WEST;
+                        break;
+                    case NORTHWEST:
+                        nextDirection = Direction.SOUTH;
+                        break;
+                    case WEST:
+                        nextDirection = Direction.SOUTH;
+                        break;
+                    case SOUTHWEST:
+                        nextDirection = Direction.EAST;
+                        break;
+                    case SOUTH:
+                        nextDirection = Direction.EAST;
+                        break;
+                    case SOUTHEAST:
+                        nextDirection = Direction.NORTH;
+                        break;
+                    case EAST:
+                        nextDirection = Direction.NORTH;
+                        break;
+                    case NORTHEAST:
+                        nextDirection = Direction.WEST;
+                        break;
+
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + directionFromHQ);
+                }
+
+                System.out.println(directionFromHQ.toString());
+                System.out.println(nextDirection.toString());
+
+                //If it doesn't have any dirt, pick up the dirt from a non-wall area
+                if (rc.getDirtCarrying() == 0) {
+                    switch (directionFromHQ) {
+                        case NORTH:
+                            rc.digDirt(Direction.NORTH);
+                        case NORTHWEST:
+                            rc.digDirt(Direction.NORTH);
+                        case WEST:
+                            rc.digDirt(Direction.WEST);
+                        case SOUTHWEST:
+                            rc.digDirt(Direction.WEST);
+                        case SOUTH:
+                            rc.digDirt(Direction.SOUTH);
+                        case SOUTHEAST:
+                            rc.digDirt(Direction.SOUTH);
+                        case EAST:
+                            rc.digDirt(Direction.EAST);
+                        case NORTHEAST:
+                            rc.digDirt(Direction.EAST);
                     }
-                    case NORTHWEST: {
-                        rc.depositDirt(Direction.SOUTH);
-                        rc.move(Direction.SOUTH);
-                    }
-                    case WEST: {
-                        rc.depositDirt(Direction.SOUTH);
-                        rc.move(Direction.SOUTH);
-                    }
-                    case SOUTHWEST: {
-                        rc.depositDirt(Direction.EAST);
-                        rc.move(Direction.EAST);
-                    }
-                    case SOUTH: {
-                        rc.depositDirt(Direction.EAST);
-                        rc.move(Direction.EAST);
-                    }
-                    case SOUTHEAST: {
-                        rc.depositDirt(Direction.NORTH);
-                        rc.move(Direction.NORTH);
-                    }
-                    case EAST: {
-                        rc.depositDirt(Direction.NORTH);
-                        rc.move(Direction.NORTH);
-                    }
-                    case NORTHEAST: {
-                        rc.depositDirt(Direction.WEST);
-                        rc.move(Direction.WEST);
-                    }
+                }
+
+                //If the elevation below me is 1 higher than the next, move
+                else if(rc.senseElevation(rc.getLocation()) > rc.senseElevation(rc.getLocation().add(nextDirection))){
+                    rc.move(nextDirection);
+                }
+
+                //Only thing left is to dump dirt beneath my feet
+                else{
+                    rc.depositDirt(Direction.CENTER);
                 }
             }
         }
     }
 
-    //Pass it MapLocation and the robot's current location
-    //Checks all directions from the robots location, if 1 is the HQlocation, then return true
-    //Otherwise returns false
-    static boolean notAtHQ(MapLocation HQLocation, MapLocation robotLocation){
-        for(Direction d : directions)
-            if(rc.getLocation().add(d).equals(HQLocation)) return true;
-
-        return false;
-    }
 
     //Tries to move closer to the HQLocation, throws GameActionException
     //This should never throw an error
@@ -273,6 +300,7 @@ public strictfp class RobotPlayer {
         catch (GameActionException e){
             System.out.println("Landscaper tried to move using navigateTo and failed.\n" + e.getMessage());
         }
+
     }
 
     static void runDeliveryDrone() throws GameActionException {
