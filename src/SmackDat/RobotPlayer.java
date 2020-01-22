@@ -9,6 +9,7 @@ public strictfp class RobotPlayer {
     static int numberOfMiners = 0;
     static int numberOfDesignSchools = 0;
     static int numberOfLandscapers = 0;
+    static int numberOfFulfillmentCenters = 0;
 
     static final int secretTeamKey = 729384;
 
@@ -75,13 +76,7 @@ public strictfp class RobotPlayer {
 
     static void runHQ() throws GameActionException {
 
-        /*
-        if(hqLocation == null) {
-            MapLocation t = rc.getLocation();
-            hqLocation = new MapLocation(t.x, t.y);
-            System.out.println("Map location set at " + t.x + ", " + t.y);
-        }
-        */
+        //At the start of the game send the HQ Location out onto the blockchain
         if(rc.getRoundNum() < 5)
             sendHQLocation(rc.getLocation());
 
@@ -91,6 +86,7 @@ public strictfp class RobotPlayer {
             } else {
                 if(tryBuild(RobotType.MINER, dir))
                     numberOfMiners++;
+                break;
             }
         }
         //Sense all robots near the HQ, if there is a drone from the enemy team in the radius,
@@ -109,16 +105,13 @@ public strictfp class RobotPlayer {
 
     public static void sendHQLocation(MapLocation loc) throws GameActionException{
         int [] message = new int[7];
-
-
         message[0] = secretTeamKey;
-        message[1] = 0;
+        message[1] = 0; //0 Designates it is HQ Location
         message[2] = loc.x;
         message[3] = loc.y;
 
         if(rc.canSubmitTransaction(message, 2))
             rc.submitTransaction(message, 2);
-
 
     }
 
@@ -128,8 +121,10 @@ public strictfp class RobotPlayer {
         for (int i = 1; i < rc.getRoundNum(); i++){
             for(Transaction t : rc.getBlock(i)){
                 int[] message = t.getMessage();
+
+                //If the message uses our secret key and the message[1] field has 0 (HQLocation designator)
                 if(message[0] == secretTeamKey && message[1] == 0){
-                    System.out.println("I got a message");
+                    //TEST: System.out.println("I got a message");
                     return new MapLocation(message[2], message[3]);
                 }
             }
@@ -141,16 +136,9 @@ public strictfp class RobotPlayer {
     static void runMiner() throws GameActionException {
         tryBlockchain();
         tryMove(randomDirection());
-        if (tryMove(randomDirection()))
-            System.out.println("I moved!");
+        if(tryMove(randomDirection()));
+            //TEST: System.out.println("I moved!");
         // tryBuild(randomSpawnedByMiner(), randomDirection());
-        /*
-        for (Direction dir : directions)
-            tryBuild(RobotType.FULFILLMENT_CENTER, dir);
-
-        for (Direction dir : directions)
-            tryBuild(RobotType.REFINERY, dir);
-        */
 
         //Currently will only make a max of 1 Design Schools
         if(numberOfDesignSchools < 1) {
@@ -160,6 +148,21 @@ public strictfp class RobotPlayer {
                     break;
                 }
         }
+
+        if(numberOfFulfillmentCenters < 1){
+            for(Direction d : directions){
+                if(tryBuild(RobotType.FULFILLMENT_CENTER, d)){
+                    numberOfFulfillmentCenters++;
+                    break;
+                }
+            }
+        }
+        /*
+        for (Direction dir : directions)
+            tryBuild(RobotType.REFINERY, dir);
+        */
+
+
 
         for (Direction dir : directions)
             if (tryRefine(dir))
@@ -179,13 +182,17 @@ public strictfp class RobotPlayer {
 
     //Currently will only make a max of 1 landscapers
     static void runDesignSchool() throws GameActionException {
-        for (Direction dir : directions)
-            if (numberOfLandscapers > 0){
+        if (numberOfLandscapers > 0)
+            return;
+
+        for (Direction dir : directions) {
+
+            if (tryBuild(RobotType.LANDSCAPER, dir)) {
+                numberOfLandscapers++;
                 break;
-            } else {
-                if(tryBuild(RobotType.LANDSCAPER, dir))
-                    numberOfLandscapers++;
+
             }
+        }
 
     }
 
@@ -307,6 +314,10 @@ public strictfp class RobotPlayer {
 
     static void runDeliveryDrone() throws GameActionException {
         Team enemy = rc.getTeam().opponent();
+
+        //For now I just want them getting away from the Fulfillment center
+        tryMove(randomDirection());
+
         if (!rc.isCurrentlyHoldingUnit()) {
             // See if there are any enemy robots within capturing range
             RobotInfo[] robots = rc.senseNearbyRobots(GameConstants.DELIVERY_DRONE_PICKUP_RADIUS_SQUARED, enemy);
