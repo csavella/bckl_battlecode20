@@ -143,13 +143,13 @@ public strictfp class RobotPlayer {
         if (tryMove(randomDirection()))
             System.out.println("I moved!");
         // tryBuild(randomSpawnedByMiner(), randomDirection());
+        /*
         for (Direction dir : directions)
             tryBuild(RobotType.FULFILLMENT_CENTER, dir);
 
         for (Direction dir : directions)
             tryBuild(RobotType.REFINERY, dir);
-
-
+        */
 
         //Currently will only make a max of 1 Design Schools
         if(numberOfDesignSchools < 1) {
@@ -182,7 +182,8 @@ public strictfp class RobotPlayer {
             if (numberOfLandscapers > 0){
                 break;
             } else {
-                tryBuild(RobotType.LANDSCAPER, dir);
+                if(tryBuild(RobotType.LANDSCAPER, dir))
+                    numberOfLandscapers++;
             }
 
     }
