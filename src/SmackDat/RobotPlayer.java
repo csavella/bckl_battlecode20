@@ -53,15 +53,33 @@ public strictfp class RobotPlayer {
                 // You can add the missing ones or rewrite this into your own control structure.
                 //System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
                 switch (rc.getType()) {
-                    case HQ:                 runHQ();                break;
-                    case MINER:              runMiner();             break;
-                    case REFINERY:           runRefinery();          break;
-                    case VAPORATOR:          runVaporator();         break;
-                    case DESIGN_SCHOOL:      runDesignSchool();      break;
-                    case FULFILLMENT_CENTER: runFulfillmentCenter(); break;
-                    case LANDSCAPER:         runLandscaper();        break;
-                    case DELIVERY_DRONE:     runDeliveryDrone();     break;
-                    case NET_GUN:            runNetGun();            break;
+                    case HQ:
+                        runHQ();
+                        break;
+                    case MINER:
+                        runMiner();
+                        break;
+                    case REFINERY:
+                        runRefinery();
+                        break;
+                    case VAPORATOR:
+                        runVaporator();
+                        break;
+                    case DESIGN_SCHOOL:
+                        runDesignSchool();
+                        break;
+                    case FULFILLMENT_CENTER:
+                        runFulfillmentCenter();
+                        break;
+                    case LANDSCAPER:
+                        runLandscaper();
+                        break;
+                    case DELIVERY_DRONE:
+                        runDeliveryDrone();
+                        break;
+                    case NET_GUN:
+                        runNetGun();
+                        break;
                 }
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
@@ -77,14 +95,14 @@ public strictfp class RobotPlayer {
     static void runHQ() throws GameActionException {
 
         //At the start of the game send the HQ Location out onto the blockchain
-        if(rc.getRoundNum() < 5)
+        if (rc.getRoundNum() < 5)
             sendHQLocation(rc.getLocation());
 
         for (Direction dir : directions) {
             if (numberOfMiners > 1) {
                 break;
             } else {
-                if(tryBuild(RobotType.MINER, dir))
+                if (tryBuild(RobotType.MINER, dir))
                     numberOfMiners++;
                 break;
             }
@@ -92,25 +110,24 @@ public strictfp class RobotPlayer {
         //Sense all robots near the HQ, if there is a drone from the enemy team in the radius,
         //Shoot it down
         Team myTeamColor = rc.getTeam();
-        RobotInfo [] nearbyRobots = rc.senseNearbyRobots();
-        for(RobotInfo r : nearbyRobots){
+        RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
+        for (RobotInfo r : nearbyRobots) {
             // TEST: System.out.println("Robot nearby");
-            if(r.team == myTeamColor && rc.canShootUnit(r.ID))
+            if (r.team == myTeamColor && rc.canShootUnit(r.ID))
                 rc.shootUnit(r.ID);
-
 
         }
 
     }
 
-    public static void sendHQLocation(MapLocation loc) throws GameActionException{
-        int [] message = new int[7];
+    public static void sendHQLocation(MapLocation loc) throws GameActionException {
+        int[] message = new int[7];
         message[0] = secretTeamKey;
         message[1] = 0; //0 Designates it is HQ Location
         message[2] = loc.x;
         message[3] = loc.y;
 
-        if(rc.canSubmitTransaction(message, 2))
+        if (rc.canSubmitTransaction(message, 2))
             rc.submitTransaction(message, 2);
 
     }
@@ -118,12 +135,12 @@ public strictfp class RobotPlayer {
     //Scan the whole blockchain from round 1 for our HQ message announcing the HQ location
     //Return 1,1 MapLocation if for some reason we never broadcast our location
     public static MapLocation getHQLocation() throws GameActionException {
-        for (int i = 1; i < rc.getRoundNum(); i++){
-            for(Transaction t : rc.getBlock(i)){
+        for (int i = 1; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
                 int[] message = t.getMessage();
 
                 //If the message uses our secret key and the message[1] field has 0 (HQLocation designator)
-                if(message[0] == secretTeamKey && message[1] == 0){
+                if (message[0] == secretTeamKey && message[1] == 0) {
                     //TEST: System.out.println("I got a message");
                     return new MapLocation(message[2], message[3]);
                 }
@@ -136,22 +153,22 @@ public strictfp class RobotPlayer {
     static void runMiner() throws GameActionException {
         tryBlockchain();
         tryMove(randomDirection());
-        if(tryMove(randomDirection()));
-            //TEST: System.out.println("I moved!");
+        if (tryMove(randomDirection())) ;
+        //TEST: System.out.println("I moved!");
         // tryBuild(randomSpawnedByMiner(), randomDirection());
 
         //Currently will only make a max of 1 Design Schools
-        if(numberOfDesignSchools < 1) {
-            for (Direction dir : directions)
-                if (tryBuild(RobotType.DESIGN_SCHOOL, dir)) {
-                    numberOfDesignSchools++;
-                    break;
-                }
-        }
+        //if(numberOfDesignSchools < 1) {
+        //   for (Direction dir : directions)
+        //      if (tryBuild(RobotType.DESIGN_SCHOOL, dir)) {
+        //         numberOfDesignSchools++;
+        //        break;
+        //   }
+        //}
 
-        if(numberOfFulfillmentCenters < 1){
-            for(Direction d : directions){
-                if(tryBuild(RobotType.FULFILLMENT_CENTER, d)){
+        if (numberOfFulfillmentCenters < 1) {
+            for (Direction d : directions) {
+                if (tryBuild(RobotType.FULFILLMENT_CENTER, d)) {
                     numberOfFulfillmentCenters++;
                     break;
                 }
@@ -161,7 +178,6 @@ public strictfp class RobotPlayer {
         for (Direction dir : directions)
             tryBuild(RobotType.REFINERY, dir);
         */
-
 
 
         for (Direction dir : directions)
@@ -204,7 +220,7 @@ public strictfp class RobotPlayer {
     static void runLandscaper() throws GameActionException {
         MapLocation HQLocation = getHQLocation();
 
-        if(rc.isReady()) {
+        if (rc.isReady()) {
             if (!rc.getLocation().isAdjacentTo(HQLocation)) {
                 //navigateTo or some version of it needs to be implemented using a pathfinding algorithm eventually,
                 //probably Djikstras or A*, Im just sticking a bandaid here for now
@@ -212,8 +228,7 @@ public strictfp class RobotPlayer {
                 Direction t = rc.getLocation().directionTo(HQLocation);
                 System.out.println("hi");
                 rc.move(rc.getLocation().directionTo(HQLocation));
-            }
-            else {
+            } else {
                 //Figure out which of the 8 squares around the HQ it's on, so it knows where to take dirt from
                 //and where to place dirt at and then move to
                 MapLocation currentLocation = rc.getLocation();
@@ -230,7 +245,7 @@ public strictfp class RobotPlayer {
 
                 Direction nextDirection;
 
-                switch(directionFromHQ){
+                switch (directionFromHQ) {
                     case NORTH:
                         nextDirection = Direction.WEST;
                         break;
@@ -286,12 +301,12 @@ public strictfp class RobotPlayer {
                 }
 
                 //If the elevation below me is 1 higher than the next, move
-                else if(rc.senseElevation(rc.getLocation()) > rc.senseElevation(rc.getLocation().add(nextDirection))){
+                else if (rc.senseElevation(rc.getLocation()) > rc.senseElevation(rc.getLocation().add(nextDirection))) {
                     rc.move(nextDirection);
                 }
 
                 //Only thing left is to dump dirt beneath my feet
-                else{
+                else {
                     rc.depositDirt(Direction.CENTER);
                 }
             }
@@ -301,12 +316,10 @@ public strictfp class RobotPlayer {
 
     //Tries to move closer to the HQLocation, throws GameActionException
     //This should never throw an error
-    static void navigateTo(MapLocation HQLocation, MapLocation robotLocation){
+    static void navigateTo(MapLocation HQLocation, MapLocation robotLocation) {
         try {
             rc.move(robotLocation.directionTo(HQLocation));
-        }
-
-        catch (GameActionException e){
+        } catch (GameActionException e) {
             System.out.println("Landscaper tried to move using navigateTo and failed.\n" + e.getMessage());
         }
 
@@ -315,8 +328,36 @@ public strictfp class RobotPlayer {
     static void runDeliveryDrone() throws GameActionException {
         Team enemy = rc.getTeam().opponent();
 
+        if (rc.isCurrentlyHoldingUnit()) {
+            tryMove(randomDirection());
+        }
+        else if (rc.isReady()) {
+            RobotInfo[] robots = rc.senseNearbyRobots();
+            if(robots.length==0){
+                MapLocation m = getHQLocation();
+                rc.move(rc.getLocation().directionTo(m).opposite());
+            }
+            for (RobotInfo r : robots) {
+                if (r.team == enemy) {
+                    if (rc.getLocation().isAdjacentTo(r.getLocation())) {
+                        if (rc.canPickUpUnit(r.getID())) {
+                            rc.pickUpUnit(r.getID());
+                            break;
+                        }
+                    }
+                }
+
+            }
+            //move to the enemy direction
+            for (RobotInfo r : robots) {
+                if (r.team == enemy) {
+                    rc.move(rc.getLocation().directionTo(r.getLocation()));
+                }
+            }
+        }
+
         //For now I just want them getting away from the Fulfillment center
-        tryMove(randomDirection());
+       /* tryMove(randomDirection());
 
         if (!rc.isCurrentlyHoldingUnit()) {
             // See if there are any enemy robots within capturing range
@@ -330,7 +371,7 @@ public strictfp class RobotPlayer {
         } else {
             // No close robots, so search for robots within sight radius
             tryMove(randomDirection());
-        }
+        } */
     }
 
     static void runNetGun() throws GameActionException {
