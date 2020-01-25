@@ -10,6 +10,7 @@ public strictfp class RobotPlayer {
     static int numberOfDesignSchools = 0;
     static int numberOfLandscapers = 0;
     static int numberOfFulfillmentCenters = 0;
+    static int numberOfRefineries = 0;
 
     static final int secretTeamKey = 729384;
 
@@ -80,8 +81,9 @@ public strictfp class RobotPlayer {
         if(rc.getRoundNum() < 5)
             sendHQLocation(rc.getLocation());
 
+
         for (Direction dir : directions) {
-            if (numberOfMiners > 1) {
+            if (numberOfMiners > 0) {
                 break;
             } else {
                 if(tryBuild(RobotType.MINER, dir))
@@ -137,33 +139,38 @@ public strictfp class RobotPlayer {
         tryBlockchain();
         tryMove(randomDirection());
         if(tryMove(randomDirection()));
-            //TEST: System.out.println("I moved!");
+        //TEST: System.out.println("I moved!");
         // tryBuild(randomSpawnedByMiner(), randomDirection());
 
         //Currently will only make a max of 1 Design Schools
-        if(numberOfDesignSchools < 1) {
-            for (Direction dir : directions)
-                if (tryBuild(RobotType.DESIGN_SCHOOL, dir)) {
-                    numberOfDesignSchools++;
-                    break;
-                }
-        }
+        {
+            if (numberOfDesignSchools < 1) {
+                for (Direction dir : directions)
+                    if (tryBuild(RobotType.DESIGN_SCHOOL, dir)) {
+                        numberOfDesignSchools++;
+                        break;
+                    }
+            }
 
-        if(numberOfFulfillmentCenters < 1){
-            for(Direction d : directions){
-                if(tryBuild(RobotType.FULFILLMENT_CENTER, d)){
-                    numberOfFulfillmentCenters++;
-                    break;
+            if (numberOfFulfillmentCenters < 1) {
+                for (Direction d : directions) {
+                    if (tryBuild(RobotType.FULFILLMENT_CENTER, d)) {
+                        numberOfFulfillmentCenters++;
+                        break;
+                    }
+                }
+            }
+
+            //System.out.println("I made a refinery");
+            if (numberOfRefineries < 1) {
+                for (Direction d : directions) {
+                    if (tryBuild(RobotType.REFINERY, d)) {
+                        numberOfRefineries++;
+                        break;
+                    }
                 }
             }
         }
-        /*
-        for (Direction dir : directions)
-            tryBuild(RobotType.REFINERY, dir);
-        */
-
-
-
         for (Direction dir : directions)
             if (tryRefine(dir))
                 System.out.println("I refined soup! " + rc.getTeamSoup());
@@ -197,8 +204,8 @@ public strictfp class RobotPlayer {
     }
 
     static void runFulfillmentCenter() throws GameActionException {
-        for (Direction dir : directions)
-            tryBuild(RobotType.DELIVERY_DRONE, dir);
+        //for (Direction dir : directions)
+          //  tryBuild(RobotType.DELIVERY_DRONE, dir);
     }
 
     static void runLandscaper() throws GameActionException {
