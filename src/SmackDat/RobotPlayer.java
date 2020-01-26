@@ -1,6 +1,8 @@
 package SmackDat;
 import battlecode.common.*;
 
+import java.util.Random;
+
 // Hello, testing if we can merge
 // Test 2
 
@@ -170,6 +172,7 @@ public strictfp class RobotPlayer {
 
     static void runMiner() throws GameActionException {
         int tempTurncount = 40;
+        System.out.println(turnCount);
         if (HQLocation == null) {
             RobotInfo[] robots = rc.senseNearbyRobots();
             for (RobotInfo robot : robots) {
@@ -233,15 +236,38 @@ public strictfp class RobotPlayer {
             int hqX = getHQLocation().x;
             int hqY = getHQLocation().y;
             int mapCoordinates = 0;
+
+            Direction[] directionList;
+
+
             if (hqX < mapX / 3 && hqY < mapY / 3 ) {
                 mapCoordinates = 1;
+                directionList = directions1;
             } else if (hqX < mapX / 3 && hqY > mapY * 2 / 3 ) {
                 mapCoordinates = 2;
+                directionList = directions2;
             } else if (hqX > mapX * 2 / 3 && hqY > mapY * 2 / 3 ) {
                 mapCoordinates = 3;
+                directionList = directions3;
             } else if (hqX > mapX * 2 / 3 && hqY < mapY / 3 ) {
                 mapCoordinates = 4;
+                directionList = directions4;
+            } else {
+                directionList = directions;
             }
+
+            int randomNum;
+
+            Random random = new Random();
+            if (mapCoordinates == 0) {
+                randomNum = random.nextInt(8);
+            } else {
+                randomNum = random.nextInt(3);
+            }
+
+            minerDirection = directionList[randomNum];
+            System.out.println("Hello!");
+            System.out.println(minerDirection);
         }
     }
 
