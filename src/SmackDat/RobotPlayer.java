@@ -11,12 +11,24 @@ public strictfp class RobotPlayer {
     static int numberOfLandscapers = 0;
     static int numberOfFulfillmentCenters = 0;
     static int numberOfRefineries = 0;
+    static MapLocation HQLocation = null;
+    static Direction minerDirection = null;
 
     static final int secretTeamKey = 729384;
 
 
     static RobotController rc;
 
+    /*static Direction[] directions = {
+            Direction.NORTH,
+            Direction.NORTHEAST,
+            Direction.EAST,
+            Direction.SOUTHEAST,
+            Direction.SOUTH,
+            Direction.SOUTHWEST,
+            Direction.WEST,
+            Direction.NORTHWEST
+    };*/
     static Direction[] directions = {
             Direction.NORTH,
             Direction.NORTHEAST,
@@ -27,6 +39,27 @@ public strictfp class RobotPlayer {
             Direction.WEST,
             Direction.NORTHWEST
     };
+    static Direction[] directions1 = {
+            Direction.NORTH,
+            Direction.NORTHEAST,
+            Direction.EAST
+    };
+    static Direction[] directions2 = {
+            Direction.EAST,
+            Direction.SOUTHEAST,
+            Direction.SOUTH
+    };
+    static Direction[] directions3 = {
+            Direction.WEST,
+            Direction.SOUTHWEST,
+            Direction.SOUTH
+    };
+    static Direction[] directions4 = {
+            Direction.WEST,
+            Direction.NORTHWEST,
+            Direction.NORTH
+    };
+
     static RobotType[] spawnedByMiner = {RobotType.REFINERY, RobotType.VAPORATOR, RobotType.DESIGN_SCHOOL,
             RobotType.FULFILLMENT_CENTER, RobotType.NET_GUN};
 
@@ -83,7 +116,7 @@ public strictfp class RobotPlayer {
 
 
         for (Direction dir : directions) {
-            if (numberOfMiners > 0) {
+            if (numberOfMiners > 5) {
                 break;
             } else {
                 if(tryBuild(RobotType.MINER, dir))
@@ -136,9 +169,18 @@ public strictfp class RobotPlayer {
     }
 
     static void runMiner() throws GameActionException {
+        int tempTurncount = 40;
+        if (HQLocation == null) {
+            RobotInfo[] robots = rc.senseNearbyRobots();
+            for (RobotInfo robot : robots) {
+                if(robot.type == RobotType.HQ) {
+                    HQLocation = robot.location;
+                }
+            }
+        }
         tryBlockchain();
-        tryMove(randomDirection());
-        if(tryMove(randomDirection()));
+        //tryMove(randomDirection());
+        //if(tryMove(randomDirection()));
         //TEST: System.out.println("I moved!");
         // tryBuild(randomSpawnedByMiner(), randomDirection());
 
@@ -177,6 +219,42 @@ public strictfp class RobotPlayer {
         for (Direction dir : directions)
             if (tryMine(dir))
                 System.out.println("I mined soup! " + rc.getSoupCarrying());
+        if (turnCount < tempTurncount) {
+            if (rc.getSoupCarrying() == 100) {
+                Direction backtoHQ = rc.getLocation().directionTo(HQLocation);
+                if (tryMove(backtoHQ))
+                    System.out.println("going back to HQ");
+            } else
+                move(rc.senseNearbySoup()[0]);
+        }
+        else if (turnCount == tempTurncount+1) {
+            int mapX = rc.getMapWidth();
+            int mapY = rc.getMapHeight();
+            int hqX = getHQLocation().x;
+            int hqY = getHQLocation().y;
+            int mapCoordinates = 0;
+            if (hqX < mapX / 3 && hqY < mapY / 3 ) {
+                mapCoordinates = 1;
+            } else if (hqX < mapX / 3 && hqY > mapY * 2 / 3 ) {
+                mapCoordinates = 2;
+            } else if (hqX > mapX * 2 / 3 && hqY > mapY * 2 / 3 ) {
+                mapCoordinates = 3;
+            } else if (hqX > mapX * 2 / 3 && hqY < mapY / 3 ) {
+                mapCoordinates = 4;
+            }
+        }
+    }
+
+    static boolean move(Direction direction) throws GameActionException {
+        Direction[] all = {direction, direction.rotateLeft(), direction.rotateRight()};
+        for (Direction d : all) {
+            if (tryMove(d))
+                return true;
+        }
+        return false;
+    }
+    static boolean move(MapLocation destination) throws GameActionException {
+        return move(rc.getLocation().directionTo(destination));
     }
 
     static void runRefinery() throws GameActionException {
