@@ -1,6 +1,8 @@
 package SmackDat;
 import battlecode.common.*;
 
+import java.util.Random;
+
 // Hello, testing if we can merge
 // Test 2
 
@@ -11,6 +13,8 @@ public strictfp class RobotPlayer {
     static int numberOfLandscapers = 0;
     static int numberOfFulfillmentCenters = 0;
     static int numberOfRefineries = 0;
+    static MapLocation HQLocation = null;
+    static Direction minerDirection = null;
 
     static final int secretTeamKey = 729384;
 
@@ -27,6 +31,30 @@ public strictfp class RobotPlayer {
             Direction.WEST,
             Direction.NORTHWEST
     };
+
+    /* these directions will be used to move the miners away from the HQ
+       in hopes to find soup in different areas of the map */
+    static Direction[] directions1 = {
+            Direction.NORTH,
+            Direction.NORTHEAST,
+            Direction.EAST
+    };
+    static Direction[] directions2 = {
+            Direction.EAST,
+            Direction.SOUTHEAST,
+            Direction.SOUTH
+    };
+    static Direction[] directions3 = {
+            Direction.WEST,
+            Direction.SOUTHWEST,
+            Direction.SOUTH
+    };
+    static Direction[] directions4 = {
+            Direction.WEST,
+            Direction.NORTHWEST,
+            Direction.NORTH
+    };
+
     static RobotType[] spawnedByMiner = {RobotType.REFINERY, RobotType.VAPORATOR, RobotType.DESIGN_SCHOOL,
             RobotType.FULFILLMENT_CENTER, RobotType.NET_GUN};
 
@@ -101,7 +129,7 @@ public strictfp class RobotPlayer {
 
 
         for (Direction dir : directions) {
-            if (numberOfMiners > 0) {
+            if (numberOfMiners > 1) {
                 break;
             } else {
                 if (tryBuild(RobotType.MINER, dir))
@@ -153,13 +181,74 @@ public strictfp class RobotPlayer {
     }
 
     static void runMiner() throws GameActionException {
+        int switchMoveLogicTurnCount = 40;
+        if (HQLocation == null) {
+            RobotInfo[] robots = rc.senseNearbyRobots();
+            for (RobotInfo robot : robots) {
+                if(robot.type == RobotType.HQ) {
+                    HQLocation = robot.location;
+                }
+            }
+        }
         tryBlockchain();
-        tryMove(randomDirection());
 
-        if (tryMove(randomDirection())) ;
+        for (Direction dir : directions)
+            if (tryRefine(dir))
+                System.out.println("I refined soup! " + rc.getTeamSoup());
+        for (Direction dir : directions)
+            if (tryMine(dir))
+                System.out.println("I mined soup! " + rc.getSoupCarrying());
 
-        //TEST: System.out.println("I moved!");
-        // tryBuild(randomSpawnedByMiner(), randomDirection());
+        /* sense soup and move towards it. If already carrying a bunch of soup, bring it back to the HQ.
+           on every 40th turn, move in a general direction. Goal is for miners to spread out to find
+           soup on map
+        */
+        if (turnCount % switchMoveLogicTurnCount != 0) {
+            if (rc.getSoupCarrying() == 100) {
+                Direction backtoHQ = rc.getLocation().directionTo(HQLocation);
+                if (tryMove(backtoHQ))
+                    System.out.println("going back to HQ");
+            } else {
+                MapLocation[] soups = rc.senseNearbySoup();
+                for (MapLocation soup : soups) {
+                    System.out.println("moving towards soup");
+                    moveTo(soup);
+                }
+            }
+        }
+        else {
+            int mapX = rc.getMapWidth();
+            int mapY = rc.getMapHeight();
+            int hqX = getHQLocation().x;
+            int hqY = getHQLocation().y;
+            int mapCoordinates = 0;
+            Direction[] directionList;
+            if (hqX < mapX / 3 && hqY < mapY / 3 ) {
+                mapCoordinates = 1;
+                directionList = directions1;
+            } else if (hqX < mapX / 3 && hqY > mapY * 2 / 3 ) {
+                mapCoordinates = 2;
+                directionList = directions2;
+            } else if (hqX > mapX * 2 / 3 && hqY > mapY * 2 / 3 ) {
+                mapCoordinates = 3;
+                directionList = directions3;
+            } else if (hqX > mapX * 2 / 3 && hqY < mapY / 3 ) {
+                mapCoordinates = 4;
+                directionList = directions4;
+            } else {
+                directionList = directions;
+            }
+            int randomNum;
+            Random random = new Random();
+            if (mapCoordinates == 0) {
+                randomNum = random.nextInt(8);
+            } else {
+                randomNum = random.nextInt(3);
+            }
+            minerDirection = directionList[randomNum];
+            System.out.println("moving " + minerDirection);
+            moveTo(minerDirection);
+        }
 
         //Currently will only make a max of 1 Design Schools
         {
@@ -180,7 +269,6 @@ public strictfp class RobotPlayer {
                 }
             }
 
-            //System.out.println("I made a refinery");
             if (numberOfRefineries < 1) {
                 for (Direction d : directions) {
                     if (tryBuild(RobotType.REFINERY, d)) {
@@ -190,13 +278,18 @@ public strictfp class RobotPlayer {
                 }
             }
         }
+    }
 
-        for (Direction dir : directions)
-            if (tryRefine(dir))
-                System.out.println("I refined soup! " + rc.getTeamSoup());
-        for (Direction dir : directions)
-            if (tryMine(dir))
-                System.out.println("I mined soup! " + rc.getSoupCarrying());
+    static boolean moveTo(Direction direction) throws GameActionException {
+        Direction[] all = {direction, direction.rotateLeft(), direction.rotateRight()};
+        for (Direction d : all) {
+            if (tryMove(d))
+                return true;
+        }
+        return false;
+    }
+    static boolean moveTo(MapLocation destination) throws GameActionException {
+        return moveTo(rc.getLocation().directionTo(destination));
     }
 
     static void runRefinery() throws GameActionException {
@@ -224,8 +317,8 @@ public strictfp class RobotPlayer {
     }
 
     static void runFulfillmentCenter() throws GameActionException {
-        //for (Direction dir : directions)
-          //  tryBuild(RobotType.DELIVERY_DRONE, dir);
+        for (Direction dir : directions)
+            tryBuild(RobotType.DELIVERY_DRONE, dir);
     }
 
     static void runLandscaper() throws GameActionException {
@@ -357,7 +450,6 @@ public strictfp class RobotPlayer {
                         }
                     }
                 }
-
             }
             //move to the enemy direction
             for (RobotInfo r : robots) {
@@ -369,11 +461,9 @@ public strictfp class RobotPlayer {
 
         //For now I just want them getting away from the Fulfillment center
        /* tryMove(randomDirection());
-
         if (!rc.isCurrentlyHoldingUnit()) {
             // See if there are any enemy robots within capturing range
             RobotInfo[] robots = rc.senseNearbyRobots(GameConstants.DELIVERY_DRONE_PICKUP_RADIUS_SQUARED, enemy);
-
             if (robots.length > 0) {
                 // Pick up a first robot within range
                 rc.pickUpUnit(robots[0].getID());
