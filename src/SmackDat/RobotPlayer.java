@@ -181,7 +181,7 @@ public strictfp class RobotPlayer {
     }
 
     static void runMiner() throws GameActionException {
-        int switchMoveLogicTurnCount = 40;
+        int switchMoveLogicTurnCount = 10;
         if (HQLocation == null) {
             RobotInfo[] robots = rc.senseNearbyRobots();
             for (RobotInfo robot : robots) {
