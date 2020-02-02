@@ -143,7 +143,7 @@ public strictfp class RobotPlayer {
         RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
         for (RobotInfo r : nearbyRobots) {
             // TEST: System.out.println("Robot nearby");
-            if (r.team == myTeamColor && rc.canShootUnit(r.ID))
+            if (r.team != myTeamColor && rc.canShootUnit(r.ID))
                 rc.shootUnit(r.ID);
 
         }
