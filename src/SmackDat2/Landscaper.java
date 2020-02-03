@@ -12,9 +12,8 @@ public class Landscaper extends Unit {
 
     public void takeTurn() throws GameActionException {
         super.takeTurn();
-        MapLocation HQLocation = getHQLocation();
+        //MapLocation HQLocation = getHQLocation();
         runLandscaper();
-
     }
 
     void runLandscaper() throws GameActionException {
@@ -48,30 +47,21 @@ public class Landscaper extends Unit {
 
                 switch(directionFromHQ){
                     case NORTH:
+                    case NORTHEAST:
                         nextDirection = Direction.WEST;
                         break;
                     case NORTHWEST:
-                        nextDirection = Direction.SOUTH;
-                        break;
                     case WEST:
                         nextDirection = Direction.SOUTH;
                         break;
                     case SOUTHWEST:
-                        nextDirection = Direction.EAST;
-                        break;
                     case SOUTH:
                         nextDirection = Direction.EAST;
                         break;
                     case SOUTHEAST:
-                        nextDirection = Direction.NORTH;
-                        break;
                     case EAST:
                         nextDirection = Direction.NORTH;
                         break;
-                    case NORTHEAST:
-                        nextDirection = Direction.WEST;
-                        break;
-
                     default:
                         throw new IllegalStateException("Unexpected value: " + directionFromHQ);
                 }
@@ -139,7 +129,7 @@ public class Landscaper extends Unit {
         }
         if (rc.canDigDirt(dir)) {
             rc.digDirt(dir);
-            rc.setIndicatorDot(rc.getLocation().add(dir), 255, 0, 0);
+            //rc.setIndicatorDot(rc.getLocation().add(dir), 255, 0, 0);
             return true;
         }
         return false;
