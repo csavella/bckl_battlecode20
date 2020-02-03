@@ -3,6 +3,9 @@ package SmackDat2;
 import battlecode.common.*;
 
 import java.util.ArrayList;
+import java.util.Random;
+
+import static SmackDat2.Util.*;
 
 public class Miner extends Unit {
 
@@ -17,6 +20,7 @@ public class Miner extends Unit {
     }
 
     public void takeTurn() throws GameActionException {
+        int switchMoveLogicTurnCount = 10;
         super.takeTurn();
 
         numDesignSchools += comms.getNewDesignSchoolCount();
@@ -38,35 +42,82 @@ public class Miner extends Unit {
             if (tryRefine(dir))
                 System.out.println("I refined soup! " + rc.getTeamSoup());
 
-        if (numDesignSchools < 3){
+        if (numDesignSchools < 1){
             if(tryBuild(RobotType.DESIGN_SCHOOL, Util.randomDirection()))
                 System.out.println("created a design school");
         }
 
         if (numberOfFulfillmentCenters < 1) {
-                if (tryBuild(RobotType.FULFILLMENT_CENTER, Util.randomDirection())) {
-                    System.out.println("created a fulfillment center");
-                    numberOfFulfillmentCenters++;
-                }
+            if (tryBuild(RobotType.FULFILLMENT_CENTER, Util.randomDirection())) {
+                System.out.println("created a fulfillment center");
+                numberOfFulfillmentCenters++;
+            }
         }
 
         if (numberOfRefineries < 1) {
-                if (tryBuild(RobotType.REFINERY, Util.randomDirection())) {
-                    System.out.println("created a refinery");
-                    numberOfRefineries++;
-                }
+            if (tryBuild(RobotType.REFINERY, Util.randomDirection())) {
+                System.out.println("created a refinery");
+                numberOfRefineries++;
+            }
         }
+        findSoup(switchMoveLogicTurnCount);
+    }
 
-        if (rc.getSoupCarrying() == RobotType.MINER.soupLimit) {
-            // time to go back to the HQ
-            if(nav.goTo(hqLoc))
-                System.out.println("moved towards HQ");
-        } else if (soupLocations.size() > 0) {
-            nav.goTo(soupLocations.get(0));
-            //rc.setIndicatorLine(rc.getLocation(), soupLocations.get(0), 255, 255, 0);
-        } else if (nav.goTo(Util.randomDirection())) {
-            // otherwise, move randomly as usual
-            System.out.println("I moved randomly!");
+
+    /* sense soup and move towards it. If already carrying a bunch of soup, bring it back to the HQ.
+           on every 40th turn, move in a general direction. Goal is for miners to spread out to find
+           soup on map
+    */
+    void findSoup(int switchMoveLogicTurnCount) throws GameActionException {
+        int mapX = rc.getMapWidth();
+        int mapY = rc.getMapHeight();
+        int hqX = hqLoc.x;
+        int hqY = hqLoc.y;
+        int mapCoordinates = 0;
+        int randomNum;
+        Direction[] directionList;
+        Direction minerDirection;
+        Direction backtoHQ;
+        Random random;
+
+        if (turnCount % switchMoveLogicTurnCount != 0) {
+            if (rc.getSoupCarrying() == RobotType.MINER.soupLimit) {
+                backtoHQ = rc.getLocation().directionTo(hqLoc);
+                if (nav.goTo(backtoHQ))
+                    System.out.println("going back to HQ");
+            } else if (soupLocations.size() > 0) {
+                nav.goTo(soupLocations.get(0));
+            } else if (nav.goTo(Util.randomDirection())) {
+                System.out.println("I moved randomly!");
+            }
+        }
+        else {
+            if (hqX < mapX / 3 && hqY < mapY / 3 ) {
+                mapCoordinates = 1;
+                directionList = directions1;
+            } else if (hqX < mapX / 3 && hqY > mapY * 2 / 3 ) {
+                mapCoordinates = 2;
+                directionList = directions2;
+            } else if (hqX > mapX * 2 / 3 && hqY > mapY * 2 / 3 ) {
+                mapCoordinates = 3;
+                directionList = directions3;
+            } else if (hqX > mapX * 2 / 3 && hqY < mapY / 3 ) {
+                mapCoordinates = 4;
+                directionList = directions4;
+            } else {
+                directionList = directions;
+            }
+
+            random = new Random();
+            if (mapCoordinates == 0) {
+                randomNum = random.nextInt(8);
+            } else {
+                randomNum = random.nextInt(3);
+            }
+
+            minerDirection = directionList[randomNum];
+            System.out.println("moving " + minerDirection);
+            nav.goTo(minerDirection);
         }
     }
 
