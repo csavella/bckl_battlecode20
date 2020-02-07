@@ -40,7 +40,7 @@ public class Util {
             Direction.NORTH
     };
 
-    static final int secretTeamKey = 729384;
+    //static final int secretTeamKey = 729384;
     /**
      * Returns a random Direction.
      *
