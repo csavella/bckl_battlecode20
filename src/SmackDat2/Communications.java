@@ -99,4 +99,25 @@ public class Communications {
             }
         }
     }
+
+    //Checks the blockchain for messages with the fulfillment center int (77)
+    public boolean fulfillmentCenterExists() throws GameActionException {
+        for (int i = 0; i < rc.getRoundNum(); i++){
+            for(Transaction t : rc.getBlock(i)){
+                int[] message = t.getMessage();
+                if(message[0] == secretTeamKey && message[1] == 77) return true;
+             }
+        }
+        return false;
+    }
+
+    //Fulfillment center creation ID is 77 on the blockchain
+    //index 2, 3 is the x,y of the fulfillment center
+    public void broadcastFulfillmentCenterExists() throws GameActionException {
+        int[] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 77;
+        message[2] = rc.getLocation().x;
+        message[3] = rc.getLocation().y;
+    }
 }
