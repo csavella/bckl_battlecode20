@@ -1,0 +1,159 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Landscaper</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">SmackDat2</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Landscaper (SmackDat2)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Landscaper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package SmackDat2;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import battlecode.common.Direction;
+<i>4</i>&nbsp;import battlecode.common.GameActionException;
+<i>5</i>&nbsp;import battlecode.common.MapLocation;
+<i>6</i>&nbsp;import battlecode.common.RobotController;
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;public class Landscaper extends Unit {
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;    public Landscaper(RobotController r) {
+<b class="nc"><i>11</i>&nbsp;        super(r);</b>
+<i>12</i>&nbsp;    }
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;    public void takeTurn() throws GameActionException {
+<b class="nc"><i>15</i>&nbsp;        super.takeTurn();</b>
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;        // first, save HQ by trying to remove dirt from it
+<b class="nc"><i>18</i>&nbsp;        if (hqLoc != null &amp;&amp; hqLoc.isAdjacentTo(rc.getLocation())) {</b>
+<b class="nc"><i>19</i>&nbsp;            Direction dirtohq = rc.getLocation().directionTo(hqLoc);</b>
+<b class="nc"><i>20</i>&nbsp;            if(rc.canDigDirt(dirtohq)){</b>
+<b class="nc"><i>21</i>&nbsp;                rc.digDirt(dirtohq);</b>
+<i>22</i>&nbsp;            }
+<i>23</i>&nbsp;        }
+<i>24</i>&nbsp;
+<b class="nc"><i>25</i>&nbsp;        if(rc.getDirtCarrying() == 0){</b>
+<b class="nc"><i>26</i>&nbsp;            tryDig();</b>
+<i>27</i>&nbsp;        }
+<i>28</i>&nbsp;
+<b class="nc"><i>29</i>&nbsp;        MapLocation bestPlaceToBuildWall = null;</b>
+<i>30</i>&nbsp;        // find best place to build
+<b class="nc"><i>31</i>&nbsp;        if(hqLoc != null) {</b>
+<b class="nc"><i>32</i>&nbsp;            int lowestElevation = 9999999;</b>
+<b class="nc"><i>33</i>&nbsp;            for (Direction dir : Util.directions) {</b>
+<b class="nc"><i>34</i>&nbsp;                MapLocation tileToCheck = hqLoc.add(dir);</b>
+<b class="nc"><i>35</i>&nbsp;                if(rc.getLocation().distanceSquaredTo(tileToCheck) &lt; 4</b>
+<b class="nc"><i>36</i>&nbsp;                        &amp;&amp; rc.canDepositDirt(rc.getLocation().directionTo(tileToCheck))) {</b>
+<b class="nc"><i>37</i>&nbsp;                    if (rc.senseElevation(tileToCheck) &lt; lowestElevation) {</b>
+<b class="nc"><i>38</i>&nbsp;                        lowestElevation = rc.senseElevation(tileToCheck);</b>
+<b class="nc"><i>39</i>&nbsp;                        bestPlaceToBuildWall = tileToCheck;</b>
+<i>40</i>&nbsp;                    }
+<i>41</i>&nbsp;                }
+<i>42</i>&nbsp;            }
+<i>43</i>&nbsp;        }
+<i>44</i>&nbsp;
+<b class="nc"><i>45</i>&nbsp;        if (Math.random() &lt; 0.8){</b>
+<i>46</i>&nbsp;            // build the wall
+<b class="nc"><i>47</i>&nbsp;            if (bestPlaceToBuildWall != null) {</b>
+<b class="nc"><i>48</i>&nbsp;                rc.depositDirt(rc.getLocation().directionTo(bestPlaceToBuildWall));</b>
+<b class="nc"><i>49</i>&nbsp;                rc.setIndicatorDot(bestPlaceToBuildWall, 0, 255, 0);</b>
+<b class="nc"><i>50</i>&nbsp;                System.out.println(&quot;building a wall&quot;);</b>
+<i>51</i>&nbsp;            }
+<i>52</i>&nbsp;        }
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;        // otherwise try to get to the hq
+<b class="nc"><i>55</i>&nbsp;        if(hqLoc != null){</b>
+<b class="nc"><i>56</i>&nbsp;            nav.goTo(hqLoc);</b>
+<i>57</i>&nbsp;        } else {
+<b class="nc"><i>58</i>&nbsp;            nav.goTo(Util.randomDirection());</b>
+<i>59</i>&nbsp;        }
+<i>60</i>&nbsp;    }
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    boolean tryDig() throws GameActionException {
+<i>63</i>&nbsp;        Direction dir;
+<b class="nc"><i>64</i>&nbsp;        if(hqLoc == null){</b>
+<b class="nc"><i>65</i>&nbsp;            dir = Util.randomDirection();</b>
+<i>66</i>&nbsp;        } else {
+<b class="nc"><i>67</i>&nbsp;            dir = hqLoc.directionTo(rc.getLocation());</b>
+<i>68</i>&nbsp;        }
+<b class="nc"><i>69</i>&nbsp;        if(rc.canDigDirt(dir)){</b>
+<b class="nc"><i>70</i>&nbsp;            rc.digDirt(dir);</b>
+<b class="nc"><i>71</i>&nbsp;            rc.setIndicatorDot(rc.getLocation().add(dir), 255, 0, 0);</b>
+<b class="nc"><i>72</i>&nbsp;            return true;</b>
+<i>73</i>&nbsp;        }
+<b class="nc"><i>74</i>&nbsp;        return false;</b>
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-02-06 12:20</div>
+</div>
+</body>
+</html>

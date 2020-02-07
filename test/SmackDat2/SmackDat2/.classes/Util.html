@@ -1,0 +1,135 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Util</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">SmackDat2</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Util (SmackDat2)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Util</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (1/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    71.4%
+  </span>
+  <span class="absValue">
+    (5/ 7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package SmackDat2;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import battlecode.common.Direction;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;// This is a file to accumulate all the random helper functions
+<i>6</i>&nbsp;// which don&#39;t interact with the game, but are common enough to be used in multiple places.
+<i>7</i>&nbsp;// For example, lots of logic involving MapLocations and Directions is common and ubiquitous.
+<b class="nc"><i>8</i>&nbsp;public class Util {</b>
+<b class="fc"><i>9</i>&nbsp;    static Direction[] directions = {</b>
+<i>10</i>&nbsp;        Direction.NORTH,
+<i>11</i>&nbsp;        Direction.NORTHEAST,
+<i>12</i>&nbsp;        Direction.EAST,
+<i>13</i>&nbsp;        Direction.SOUTHEAST,
+<i>14</i>&nbsp;        Direction.SOUTH,
+<i>15</i>&nbsp;        Direction.SOUTHWEST,
+<i>16</i>&nbsp;        Direction.WEST,
+<i>17</i>&nbsp;        Direction.NORTHWEST
+<i>18</i>&nbsp;    };
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;    /* these directions will be used to move the miners away from the HQ
+<i>21</i>&nbsp;       in hopes to find soup in different areas of the map */
+<b class="fc"><i>22</i>&nbsp;    static Direction[] directions1 = {</b>
+<i>23</i>&nbsp;            Direction.NORTH,
+<i>24</i>&nbsp;            Direction.NORTHEAST,
+<i>25</i>&nbsp;            Direction.EAST
+<i>26</i>&nbsp;    };
+<b class="fc"><i>27</i>&nbsp;    static Direction[] directions2 = {</b>
+<i>28</i>&nbsp;            Direction.EAST,
+<i>29</i>&nbsp;            Direction.SOUTHEAST,
+<i>30</i>&nbsp;            Direction.SOUTH
+<i>31</i>&nbsp;    };
+<b class="fc"><i>32</i>&nbsp;    static Direction[] directions3 = {</b>
+<i>33</i>&nbsp;            Direction.WEST,
+<i>34</i>&nbsp;            Direction.SOUTHWEST,
+<i>35</i>&nbsp;            Direction.SOUTH
+<i>36</i>&nbsp;    };
+<b class="fc"><i>37</i>&nbsp;    static Direction[] directions4 = {</b>
+<i>38</i>&nbsp;            Direction.WEST,
+<i>39</i>&nbsp;            Direction.NORTHWEST,
+<i>40</i>&nbsp;            Direction.NORTH
+<i>41</i>&nbsp;    };
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    static final int secretTeamKey = 729384;
+<i>44</i>&nbsp;    /**
+<i>45</i>&nbsp;     * Returns a random Direction.
+<i>46</i>&nbsp;     *
+<i>47</i>&nbsp;     * @return a random Direction
+<i>48</i>&nbsp;     */
+<i>49</i>&nbsp;    static Direction randomDirection() {
+<b class="nc"><i>50</i>&nbsp;        return directions[(int) (Math.random() * directions.length)];</b>
+<i>51</i>&nbsp;    }
+<i>52</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-02-06 12:20</div>
+</div>
+</body>
+</html>
