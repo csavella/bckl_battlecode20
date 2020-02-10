@@ -1,6 +1,8 @@
 package SmackDat2;
 
 import battlecode.common.*;
+
+import static SmackDat2.Communications.secretTeamKey;
 import static SmackDat2.Util.*;
 
 public class Landscaper extends Unit {
@@ -17,7 +19,7 @@ public class Landscaper extends Unit {
     }
 
     void runLandscaper() throws GameActionException {
-        MapLocation HQLocation = getHQLocation();
+        MapLocation HQLocation = comms.getHqLocFromBlockchain();
 
         if(rc.isReady()) {
             if (!rc.getLocation().isAdjacentTo(HQLocation)) {
@@ -104,7 +106,7 @@ public class Landscaper extends Unit {
         }
     }
 
-    MapLocation getHQLocation() throws GameActionException {
+    /*MapLocation getHQLocation() throws GameActionException {
         for (int i = 1; i < rc.getRoundNum(); i++){
             for(Transaction t : rc.getBlock(i)){
                 int[] message = t.getMessage();
@@ -118,7 +120,7 @@ public class Landscaper extends Unit {
         }
 
         return new MapLocation(1, 1);
-    }
+    } */
 
     boolean tryDig() throws GameActionException {
         Direction dir;
