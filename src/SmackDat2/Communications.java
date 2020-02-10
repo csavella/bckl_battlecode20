@@ -99,4 +99,51 @@ public class Communications {
             }
         }
     }
+
+    public void sendRefineryLocation(MapLocation loc) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 2; //0 Designates it is Refinery Location
+        message[2] = loc.x;
+        message[3] = loc.y;
+
+        if (rc.canSubmitTransaction(message, 2)) {
+            rc.submitTransaction(message, 2);
+
+            System.out.println("I'm transmitting!");
+        }
+    }
+
+    // Receives locations
+    public int [][] getRefineryLocations() throws GameActionException {
+        // Create array of positions of refineries (at most 10)
+        int[][] positions = new int[10][];
+
+        // Dynamically allocate space
+        for (int i = 0; i < 10; i++) {
+            positions[i] = new int[2];
+            positions[i][0] = 0;
+            positions[i][1] = 0;
+        }
+
+        for (int i = rc.getRoundNum(); i > rc.getRoundNum() - 26; i-- ) {
+
+            int index = 0;
+
+            for (Transaction t : rc.getBlock(i)) {
+                int[] message = t.getMessage();
+
+                //If the message uses our secret key and the message[1] field has 0 (HQLocation designator)
+                if (message[0] == secretTeamKey && message[1] == 2) {
+                    //TEST: System.out.println("I got a message");
+                    positions[index][0] = message[2];
+                    positions[index][1] = message[3];
+                    index += 1;
+                }
+            }
+        }
+
+        return positions;
+    }
+
 }
