@@ -47,10 +47,12 @@ public class Miner extends Unit {
                 System.out.println("created a design school");
         }
 
-        if (numberOfFulfillmentCenters < 1) {
-            if (tryBuild(RobotType.FULFILLMENT_CENTER, Util.randomDirection())) {
-                System.out.println("created a fulfillment center");
-                numberOfFulfillmentCenters++;
+        if (!comms.fulfillmentCenterExists()) {
+            for (Direction dir : directions){
+                if(tryBuild(RobotType.FULFILLMENT_CENTER, dir)){
+                    System.out.println("Fulfillment center created!");
+                    break;
+                }
             }
         }
 

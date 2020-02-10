@@ -89,6 +89,7 @@ dependencies {
 
     // The Battlecode client.
     client group: 'org.battlecode', name: clientName, version: versions.battlecode
+    implementation 'org.testng:testng:6.9.6'
 
     // Scala!
     // implementation 'org.scala-lang:scala-library:2.11.7'

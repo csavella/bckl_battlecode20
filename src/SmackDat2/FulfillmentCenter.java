@@ -14,7 +14,9 @@ public class FulfillmentCenter extends Building {
         super.takeTurn();
 
         // will only actually happen if we haven't already broadcasted the creation
-        //comms.broadcastFulfillmentCenterCreation(rc.getLocation());
+        if(!comms.fulfillmentCenterExists()){
+            comms.broadcastFulfillmentCenterExists();
+        }
 
         for (Direction dir : Util.directions) {
             if(tryBuild(RobotType.DELIVERY_DRONE, dir)) {
