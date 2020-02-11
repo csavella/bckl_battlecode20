@@ -42,26 +42,26 @@
   <td class="name">Unit</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/ 1)
+    (1/ 1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/ 3)
+    (3/ 3)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    92.9%
   </span>
   <span class="absValue">
-    (0/ 11)
+    (13/ 14)
   </span>
 </td>
 </tr>
@@ -82,38 +82,38 @@
 <i>8</i>&nbsp;    MapLocation hqLoc;
 <i>9</i>&nbsp;
 <i>10</i>&nbsp;    public Unit(RobotController r) {
-<b class="nc"><i>11</i>&nbsp;        super(r);</b>
-<b class="nc"><i>12</i>&nbsp;        nav = new Navigation(rc);</b>
-<i>13</i>&nbsp;    }
+<b class="fc"><i>11</i>&nbsp;        super(r);</b>
+<b class="fc"><i>12</i>&nbsp;        nav = new Navigation(rc);</b>
+<b class="fc"><i>13</i>&nbsp;    }</b>
 <i>14</i>&nbsp;
 <i>15</i>&nbsp;    public void takeTurn() throws GameActionException {
-<b class="nc"><i>16</i>&nbsp;        super.takeTurn();</b>
+<b class="fc"><i>16</i>&nbsp;        super.takeTurn();</b>
 <i>17</i>&nbsp;        
-<b class="nc"><i>18</i>&nbsp;        findHQ();</b>
-<i>19</i>&nbsp;    }
+<b class="fc"><i>18</i>&nbsp;        findHQ();</b>
+<b class="fc"><i>19</i>&nbsp;    }</b>
 <i>20</i>&nbsp;
 <i>21</i>&nbsp;    public void findHQ() throws GameActionException {
-<b class="nc"><i>22</i>&nbsp;        if (hqLoc == null) {</b>
+<b class="fc"><i>22</i>&nbsp;        if (hqLoc == null) {</b>
 <i>23</i>&nbsp;            // search surroundings for HQ
-<b class="nc"><i>24</i>&nbsp;            RobotInfo[] robots = rc.senseNearbyRobots();</b>
-<b class="nc"><i>25</i>&nbsp;            for (RobotInfo robot : robots) {</b>
-<b class="nc"><i>26</i>&nbsp;                if (robot.type == RobotType.HQ &amp;&amp; robot.team == rc.getTeam()) {</b>
+<b class="fc"><i>24</i>&nbsp;            RobotInfo[] robots = rc.senseNearbyRobots();</b>
+<b class="fc"><i>25</i>&nbsp;            for (RobotInfo robot : robots) {</b>
+<b class="pc"><i>26</i>&nbsp;                if (robot.type == RobotType.HQ &amp;&amp; robot.team == rc.getTeam()) {</b>
 <b class="nc"><i>27</i>&nbsp;                    hqLoc = robot.location;</b>
 <i>28</i>&nbsp;                }
 <i>29</i>&nbsp;            }
-<b class="nc"><i>30</i>&nbsp;            if(hqLoc == null) {</b>
+<b class="pc"><i>30</i>&nbsp;            if(hqLoc == null) {</b>
 <i>31</i>&nbsp;                // if still null, search the blockchain
-<b class="nc"><i>32</i>&nbsp;                hqLoc = comms.getHqLocFromBlockchain();</b>
+<b class="fc"><i>32</i>&nbsp;                hqLoc = comms.getHqLocFromBlockchain();</b>
 <i>33</i>&nbsp;            }
 <i>34</i>&nbsp;        }
-<i>35</i>&nbsp;    }
+<b class="fc"><i>35</i>&nbsp;    }</b>
 <i>36</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2020-02-06 12:20</div>
+    <div style="float:right;">generated on 2020-02-10 22:02</div>
 </div>
 </body>
 </html>

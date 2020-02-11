@@ -42,26 +42,26 @@
   <td class="name">DesignSchool</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/ 1)
+    (1/ 1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/ 2)
+    (2/ 2)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    87.5%
   </span>
   <span class="absValue">
-    (0/ 6)
+    (7/ 8)
   </span>
 </td>
 </tr>
@@ -81,28 +81,28 @@
 <i>7</i>&nbsp;
 <i>8</i>&nbsp;public class DesignSchool extends Building {
 <i>9</i>&nbsp;    public DesignSchool(RobotController r) {
-<b class="nc"><i>10</i>&nbsp;        super(r);</b>
-<i>11</i>&nbsp;    }
+<b class="fc"><i>10</i>&nbsp;        super(r);</b>
+<b class="fc"><i>11</i>&nbsp;    }</b>
 <i>12</i>&nbsp;
 <i>13</i>&nbsp;    public void takeTurn() throws GameActionException {
-<b class="nc"><i>14</i>&nbsp;        super.takeTurn();</b>
+<b class="fc"><i>14</i>&nbsp;        super.takeTurn();</b>
 <i>15</i>&nbsp;        
 <i>16</i>&nbsp;        // will only actually happen if we haven&#39;t already broadcasted the creation
-<b class="nc"><i>17</i>&nbsp;        comms.broadcastDesignSchoolCreation(rc.getLocation());</b>
+<b class="fc"><i>17</i>&nbsp;        comms.broadcastDesignSchoolCreation(rc.getLocation());</b>
 <i>18</i>&nbsp;
-<b class="nc"><i>19</i>&nbsp;        for (Direction dir : Util.directions) {</b>
-<b class="nc"><i>20</i>&nbsp;            if(tryBuild(RobotType.LANDSCAPER, dir)) {</b>
+<b class="fc"><i>19</i>&nbsp;        for (Direction dir : Util.directions) {</b>
+<b class="pc"><i>20</i>&nbsp;            if(tryBuild(RobotType.LANDSCAPER, dir)) {</b>
 <b class="nc"><i>21</i>&nbsp;                System.out.println(&quot;made a landscaper&quot;);</b>
 <i>22</i>&nbsp;            }
 <i>23</i>&nbsp;        }
-<i>24</i>&nbsp;    }
+<b class="fc"><i>24</i>&nbsp;    }</b>
 <i>25</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2020-02-06 12:20</div>
+    <div style="float:right;">generated on 2020-02-10 22:02</div>
 </div>
 </body>
 </html>

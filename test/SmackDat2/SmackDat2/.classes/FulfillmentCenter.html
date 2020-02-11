@@ -5,7 +5,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html id="htmlId">
 <head>
-  <title>Coverage Report :: HQ</title>
+  <title>Coverage Report :: FulfillmentCenter</title>
   <style type="text/css">
     @import "../../.css/coverage.css";
   </style>
@@ -20,7 +20,7 @@
     [ <a href="../index.html">SmackDat2</a> ]
 </div>
 
-<h1>Coverage Summary for Class: HQ (SmackDat2)</h1>
+<h1>Coverage Summary for Class: FulfillmentCenter (SmackDat2)</h1>
 
 <table class="coverageStats">
 <tr>
@@ -39,7 +39,7 @@
 </th>
 </tr>
 <tr>
-  <td class="name">HQ</td>
+  <td class="name">FulfillmentCenter</td>
 <td class="coverageStat">
   <span class="percent">
     100%
@@ -53,15 +53,15 @@
     100%
   </span>
   <span class="absValue">
-    (3/ 3)
+    (2/ 2)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    90.9%
+    88.9%
   </span>
   <span class="absValue">
-    (10/ 11)
+    (8/ 9)
   </span>
 </td>
 </tr>
@@ -79,26 +79,25 @@
 <i>5</i>&nbsp;import battlecode.common.RobotController;
 <i>6</i>&nbsp;import battlecode.common.RobotType;
 <i>7</i>&nbsp;
-<i>8</i>&nbsp;public class HQ extends Shooter {
-<b class="fc"><i>9</i>&nbsp;    static int numMiners = 0;</b>
-<i>10</i>&nbsp;
-<i>11</i>&nbsp;    public HQ(RobotController r) throws GameActionException {
-<b class="fc"><i>12</i>&nbsp;        super(r);</b>
-<b class="fc"><i>13</i>&nbsp;    }</b>
-<i>14</i>&nbsp;
-<i>15</i>&nbsp;    public void takeTurn() throws GameActionException {
-<b class="fc"><i>16</i>&nbsp;        super.takeTurn();</b>
-<b class="pc"><i>17</i>&nbsp;        if(turnCount == 1) {</b>
-<b class="fc"><i>18</i>&nbsp;            comms.sendHqLoc(rc.getLocation());</b>
+<i>8</i>&nbsp;public class FulfillmentCenter extends Building {
+<i>9</i>&nbsp;    public FulfillmentCenter(RobotController r) {
+<b class="fc"><i>10</i>&nbsp;        super(r);</b>
+<b class="fc"><i>11</i>&nbsp;    }</b>
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;    public void takeTurn() throws GameActionException {
+<b class="fc"><i>14</i>&nbsp;        super.takeTurn();</b>
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;        // will only actually happen if we haven&#39;t already broadcasted the creation
+<b class="pc"><i>17</i>&nbsp;        if(!comms.fulfillmentCenterExists()){</b>
+<b class="fc"><i>18</i>&nbsp;            comms.broadcastFulfillmentCenterExists();</b>
 <i>19</i>&nbsp;        }
-<b class="pc"><i>20</i>&nbsp;        if(numMiners &lt; 3) {</b>
-<b class="fc"><i>21</i>&nbsp;            for (Direction dir : Util.directions)</b>
-<b class="pc"><i>22</i>&nbsp;                if(tryBuild(RobotType.MINER, dir)){</b>
-<b class="nc"><i>23</i>&nbsp;                    numMiners++;</b>
-<i>24</i>&nbsp;                }
+<i>20</i>&nbsp;
+<b class="fc"><i>21</i>&nbsp;        for (Direction dir : Util.directions) {</b>
+<b class="pc"><i>22</i>&nbsp;            if(tryBuild(RobotType.DELIVERY_DRONE, dir)) {</b>
+<b class="nc"><i>23</i>&nbsp;                System.out.println(&quot;made a delivery drone&quot;);</b>
+<i>24</i>&nbsp;            }
 <i>25</i>&nbsp;        }
-<b class="fc"><i>26</i>&nbsp;    }</b>
-<i>27</i>&nbsp;}
+<b class="fc"><i>26</i>&nbsp;    }}</b>
 </div>
 </div>
 

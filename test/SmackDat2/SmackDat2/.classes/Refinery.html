@@ -42,26 +42,26 @@
   <td class="name">Refinery</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/ 1)
+    (1/ 1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    66.7%
   </span>
   <span class="absValue">
-    (0/ 1)
+    (2/ 3)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    66.7%
   </span>
   <span class="absValue">
-    (0/ 1)
+    (6/ 9)
   </span>
 </td>
 </tr>
@@ -74,19 +74,39 @@
 
 <div class="sourceCode"><i>1</i>&nbsp;package SmackDat2;
 <i>2</i>&nbsp;
-<i>3</i>&nbsp;import battlecode.common.RobotController;
+<i>3</i>&nbsp;import battlecode.common.*;
 <i>4</i>&nbsp;
-<i>5</i>&nbsp;public class Refinery extends Building {
-<i>6</i>&nbsp;    public Refinery(RobotController r) {
-<b class="nc"><i>7</i>&nbsp;        super(r);</b>
-<i>8</i>&nbsp;    }
-<i>9</i>&nbsp;}
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;public class Refinery extends Building {
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;    public Refinery(RobotController r) {
+<b class="fc"><i>9</i>&nbsp;        super(r);</b>
+<b class="fc"><i>10</i>&nbsp;    }</b>
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;    public void takeTurn() throws GameActionException {
+<b class="nc"><i>13</i>&nbsp;        super.takeTurn();</b>
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;        // will only actually happen if we haven&#39;t already broadcasted the creation
+<i>16</i>&nbsp;        //comms.broadcastFulfillmentCenterCreation(rc.getLocation());
+<i>17</i>&nbsp;
+<b class="nc"><i>18</i>&nbsp;        runRefinery();</b>
+<b class="nc"><i>19</i>&nbsp;    }</b>
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;    public void runRefinery() throws GameActionException {
+<b class="fc"><i>22</i>&nbsp;        System.out.println(&quot;Pollution: &quot; + rc.sensePollution(rc.getLocation()));</b>
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;        // Every 25 rounds broadcast location
+<b class="pc"><i>25</i>&nbsp;        if (rc.getRoundNum() % 25 == 0) {</b>
+<b class="fc"><i>26</i>&nbsp;            comms.sendRefineryLocation(rc.getLocation());</b>
+<i>27</i>&nbsp;        }
+<b class="fc"><i>28</i>&nbsp;    }</b>
+<i>29</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2020-02-06 12:20</div>
+    <div style="float:right;">generated on 2020-02-10 22:02</div>
 </div>
 </body>
 </html>

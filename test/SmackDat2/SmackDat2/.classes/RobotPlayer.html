@@ -39,18 +39,18 @@
   <td class="name">RobotPlayer</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    50%
   </span>
   <span class="absValue">
-    (0/ 2)
+    (1/ 2)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    5.6%
   </span>
   <span class="absValue">
-    (0/ 18)
+    (1/ 18)
   </span>
 </td>
 </tr>
@@ -77,18 +77,18 @@
   <td class="name"><strong>total</strong></td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    33.3%
   </span>
   <span class="absValue">
-    (0/ 3)
+    (1/ 3)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    5.3%
   </span>
   <span class="absValue">
-    (0/ 19)
+    (1/ 19)
   </span>
 </td>
 </tr>
@@ -101,7 +101,7 @@
 <div class="sourceCode"><i>1</i>&nbsp;package SmackDat2;
 <i>2</i>&nbsp;import battlecode.common.*;
 <i>3</i>&nbsp;
-<b class="nc"><i>4</i>&nbsp;public strictfp class RobotPlayer {</b>
+<b class="fc"><i>4</i>&nbsp;public strictfp class RobotPlayer {</b>
 <i>5</i>&nbsp;    /**
 <i>6</i>&nbsp;     * run() is the method that is called when a robot is instantiated in the Battlecode world.
 <i>7</i>&nbsp;     * If this method returns, the robot dies!
@@ -115,9 +115,9 @@
 <b class="nc"><i>15</i>&nbsp;            case REFINERY:           me = new Refinery(rc);     break;</b>
 <b class="nc"><i>16</i>&nbsp;            case VAPORATOR:          me = new Vaporator(rc);    break;</b>
 <b class="nc"><i>17</i>&nbsp;            case DESIGN_SCHOOL:      me = new DesignSchool(rc); break;</b>
-<b class="nc"><i>18</i>&nbsp;            case FULFILLMENT_CENTER: me = new Building(rc);     break;</b>
+<b class="nc"><i>18</i>&nbsp;            case FULFILLMENT_CENTER: me = new FulfillmentCenter(rc);     break;</b>
 <b class="nc"><i>19</i>&nbsp;            case LANDSCAPER:         me = new Landscaper(rc);   break;</b>
-<b class="nc"><i>20</i>&nbsp;            case DELIVERY_DRONE:     me = new Unit(rc);         break;</b>
+<b class="nc"><i>20</i>&nbsp;            case DELIVERY_DRONE:     me = new DeliveryDrone(rc);         break;</b>
 <b class="nc"><i>21</i>&nbsp;            case NET_GUN:            me = new Shooter(rc);      break;</b>
 <i>22</i>&nbsp;        }
 <i>23</i>&nbsp;
@@ -139,7 +139,7 @@
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2020-02-06 12:20</div>
+    <div style="float:right;">generated on 2020-02-10 22:02</div>
 </div>
 </body>
 </html>
