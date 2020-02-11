@@ -24,9 +24,17 @@ public class NavigationTest {
     }
 
     @Test
-    public void testTryMove() throws GameActionException {
+    public void testTryMoveTrue() throws GameActionException {
         for (Direction dir : Util.directions) {
             assertEquals(testNav.tryMove(dir), true);
+        }
+    }
+
+    @Test
+    public void testTryMoveFalse() throws GameActionException {
+        when(rc.isReady()).thenReturn(false);
+        for (Direction dir : Util.directions){
+            assertEquals(false, testNav.tryMove(dir));
         }
     }
 }
