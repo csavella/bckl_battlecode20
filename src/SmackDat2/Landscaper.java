@@ -75,32 +75,42 @@ public class Landscaper extends Unit {
                 if (rc.getDirtCarrying() == 0) {
                     switch (directionFromHQ) {
                         case NORTH:
-                            rc.digDirt(Direction.NORTH);
+                            if(rc.canDigDirt(Direction.NORTH))
+                                rc.digDirt(Direction.NORTH);
                         case NORTHWEST:
-                            rc.digDirt(Direction.NORTH);
+                            if(rc.canDigDirt(Direction.NORTH))
+                                 rc.digDirt(Direction.NORTH);
                         case WEST:
-                            rc.digDirt(Direction.WEST);
+                            if(rc.canDigDirt(Direction.WEST))
+                                 rc.digDirt(Direction.WEST);
                         case SOUTHWEST:
-                            rc.digDirt(Direction.WEST);
+                            if(rc.canDigDirt(Direction.WEST))
+                                 rc.digDirt(Direction.WEST);
                         case SOUTH:
-                            rc.digDirt(Direction.SOUTH);
+                            if(rc.canDigDirt(Direction.SOUTH))
+                                rc.digDirt(Direction.SOUTH);
                         case SOUTHEAST:
-                            rc.digDirt(Direction.SOUTH);
+                            if(rc.canDigDirt(Direction.SOUTH))
+                                rc.digDirt(Direction.SOUTH);
                         case EAST:
-                            rc.digDirt(Direction.EAST);
+                            if(rc.canDigDirt(Direction.EAST))
+                                rc.digDirt(Direction.EAST);
                         case NORTHEAST:
-                            rc.digDirt(Direction.EAST);
+                            if(rc.canDigDirt(Direction.EAST))
+                                rc.digDirt(Direction.EAST);
                     }
                 }
 
                 //If the elevation below me is 1 higher than the next, move
                 else if(rc.senseElevation(rc.getLocation()) > rc.senseElevation(rc.getLocation().add(nextDirection))){
-                    rc.move(nextDirection);
+                    if(rc.canMove(nextDirection))
+                        rc.move(nextDirection);
                 }
 
                 //Only thing left is to dump dirt beneath my feet
                 else{
-                    rc.depositDirt(Direction.CENTER);
+                    if(rc.canDepositDirt(Direction.CENTER))
+                        rc.depositDirt(Direction.CENTER);
                 }
             }
         }

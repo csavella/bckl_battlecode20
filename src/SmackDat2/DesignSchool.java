@@ -17,7 +17,8 @@ public class DesignSchool extends Building {
         comms.broadcastDesignSchoolCreation(rc.getLocation());
 
         for (Direction dir : Util.directions) {
-            if(tryBuild(RobotType.LANDSCAPER, dir)) {
+            if(!comms.landscaperExists() && tryBuild(RobotType.LANDSCAPER, dir)) {
+                comms.broadcastLandscaperExists();
                 System.out.println("made a landscaper");
             }
         }

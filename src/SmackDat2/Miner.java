@@ -51,7 +51,6 @@ public class Miner extends Unit {
             for (Direction dir : directions){
                 if(tryBuild(RobotType.FULFILLMENT_CENTER, dir)){
                     System.out.println("Fulfillment center created!");
-                    break;
                 }
             }
         }
