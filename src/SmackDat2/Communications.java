@@ -166,5 +166,26 @@ public class Communications {
         message[1] = 77;
         message[2] = rc.getLocation().x;
         message[3] = rc.getLocation().y;
+        rc.submitTransaction(message, 2);
+    }
+
+    public void broadcastDeliveryDrone() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 88;
+        rc.submitTransaction(message, 2);
+    }
+
+    public int deliveryDroneCount() throws GameActionException {
+        int droneCount = 0;
+
+        for (int i = 0; i < rc.getRoundNum(); i++){
+            for(Transaction t : rc.getBlock(i)){
+                int[] message = t.getMessage();
+                if(message[0] == secretTeamKey && message[1] == 88) droneCount+=1;
+            }
+        }
+
+        return droneCount;
     }
 }
