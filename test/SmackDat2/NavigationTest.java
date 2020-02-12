@@ -12,21 +12,24 @@ import static org.junit.Assert.*;
 
 public class NavigationTest {
 
-    private Robot testRobot;
-    private RobotController rc;
-    private Navigation testNav;
+    public Robot testRobot;
+    public RobotController rc;
+    public Navigation testNav;
 
     @Before
     public void init() {
         rc = mock(RobotController.class);
         testRobot = new Robot(rc);
         testNav = new Navigation(rc);
+
     }
 
     @Test
     public void testTryMoveTrue() throws GameActionException {
+        when(!rc.isReady()).thenReturn(false);
+
         for (Direction dir : Util.directions) {
-            assertEquals(testNav.tryMove(dir), true);
+            when(rc.isReady() && rc.canMove(dir) && !rc.senseFlooding(rc.getLocation().add(dir))).thenReturn(true);
         }
     }
 
