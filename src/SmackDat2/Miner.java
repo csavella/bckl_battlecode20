@@ -43,7 +43,7 @@ public class Miner extends Unit {
                 System.out.println("I refined soup! " + rc.getTeamSoup());
 
         findHQ();
-        if (!rc.getLocation().isAdjacentTo(hqLoc)) {
+        if (!rc.getLocation().isWithinDistanceSquared(hqLoc,9)) {
             if (numDesignSchools < 1) {
                 if (tryBuild(RobotType.DESIGN_SCHOOL, Util.randomDirection()))
                     System.out.println("created a design school");

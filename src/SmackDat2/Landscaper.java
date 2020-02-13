@@ -45,28 +45,7 @@ public class Landscaper extends Unit {
                     }
                 }
 
-                Direction nextDirection;
-
-                switch(directionFromHQ){
-                    case NORTH:
-                    case NORTHEAST:
-                        nextDirection = Direction.WEST;
-                        break;
-                    case NORTHWEST:
-                    case WEST:
-                        nextDirection = Direction.SOUTH;
-                        break;
-                    case SOUTHWEST:
-                    case SOUTH:
-                        nextDirection = Direction.EAST;
-                        break;
-                    case SOUTHEAST:
-                    case EAST:
-                        nextDirection = Direction.NORTH;
-                        break;
-                    default:
-                        throw new IllegalStateException("Unexpected value: " + directionFromHQ);
-                }
+                Direction nextDirection = getNextDirection(directionFromHQ);
 
                 System.out.println(directionFromHQ.toString());
                 System.out.println(nextDirection.toString());
@@ -114,6 +93,31 @@ public class Landscaper extends Unit {
                 }
             }
         }
+    }
+
+    protected Direction getNextDirection(Direction directionFromHQ) {
+        Direction nextDirection;
+        switch(directionFromHQ){
+            case NORTH:
+            case NORTHEAST:
+                nextDirection = Direction.WEST;
+                break;
+            case NORTHWEST:
+            case WEST:
+                nextDirection = Direction.SOUTH;
+                break;
+            case SOUTHWEST:
+            case SOUTH:
+                nextDirection = Direction.EAST;
+                break;
+            case SOUTHEAST:
+            case EAST:
+                nextDirection = Direction.NORTH;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + directionFromHQ);
+        }
+        return nextDirection;
     }
 
     /*MapLocation getHQLocation() throws GameActionException {
