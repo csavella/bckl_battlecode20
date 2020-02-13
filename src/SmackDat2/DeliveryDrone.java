@@ -26,18 +26,25 @@ public class DeliveryDrone extends Unit {
 
             if (rc.isCurrentlyHoldingUnit()) {
                 for (Direction dir : Util.directions) {
-                    if (rc.senseFlooding(rc.getLocation().add(dir)))
+                    System.out.println("I am holding a unit");
+//                    nav.tryMove(Util.directions4[0]);
+                    if (rc.senseFlooding(rc.getLocation().add(dir)) && rc.isCurrentlyHoldingUnit()) {
                         rc.dropUnit(dir);
-                    break;
+                        break;
+                    }
                 }
-                lookForWater(loc);
-
             } else if (rc.isReady()) {
+                System.out.println("I'm ready");
+
                 RobotInfo[] robots = rc.senseNearbyRobots(30, enemy);
 
+                System.out.println(robots.length == 0);
+
                 if (robots.length == 0) {
-                    returnHome();
+                    System.out.println("I am trying to go home");
+                    nav.tryMove(rc.getLocation().directionTo(comms.getHqLocFromBlockchain()));
                 } else {
+                    System.out.println("I am looking for enemy robots");
                     for (RobotInfo r : robots) {
                         if (r.team == enemy) {
                             if (rc.getLocation().isAdjacentTo(r.getLocation())) {
@@ -126,9 +133,8 @@ public class DeliveryDrone extends Unit {
 
         public void returnHome () throws GameActionException {
 
-            if (rc.canMove(rc.getLocation().directionTo(getHQLocation()))) {
-                rc.move(rc.getLocation().directionTo(getHQLocation()));
-            }
+                nav.tryMove((rc.getLocation().directionTo(getHQLocation())));
+
 
         }
 

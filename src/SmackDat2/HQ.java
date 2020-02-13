@@ -17,7 +17,7 @@ public class HQ extends Shooter {
         if(turnCount == 1) {
             comms.sendHqLoc(rc.getLocation());
         }
-        if(numMiners < 3) {
+        if(numMiners < 1) {
             for (Direction dir : Util.directions)
                 if(tryBuild(RobotType.MINER, dir)){
                     numMiners++;
