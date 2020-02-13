@@ -103,7 +103,7 @@ public class Communications {
     public void sendRefineryLocation(MapLocation loc) throws GameActionException {
         int[] message = new int[7];
         message[0] = secretTeamKey;
-        message[1] = 2; //0 Designates it is Refinery Location
+        message[1] = 3; //0 Designates it is Refinery Location
         message[2] = loc.x;
         message[3] = loc.y;
 
