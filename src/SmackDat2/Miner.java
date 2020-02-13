@@ -42,23 +42,26 @@ public class Miner extends Unit {
             if (tryRefine(dir))
                 System.out.println("I refined soup! " + rc.getTeamSoup());
 
-        if (numDesignSchools < 1){
-            if(tryBuild(RobotType.DESIGN_SCHOOL, Util.randomDirection()))
-                System.out.println("created a design school");
-        }
+        findHQ();
+        if (!rc.getLocation().isAdjacentTo(hqLoc)) {
+            if (numDesignSchools < 1) {
+                if (tryBuild(RobotType.DESIGN_SCHOOL, Util.randomDirection()))
+                    System.out.println("created a design school");
+            }
 
-        if (!comms.fulfillmentCenterExists()) {
-            for (Direction dir : directions){
-                if(tryBuild(RobotType.FULFILLMENT_CENTER, dir)){
-                    System.out.println("Fulfillment center created!");
+            if (!comms.fulfillmentCenterExists()) {
+                for (Direction dir : directions) {
+                    if (tryBuild(RobotType.FULFILLMENT_CENTER, dir)) {
+                        System.out.println("Fulfillment center created!");
+                    }
                 }
             }
-        }
 
-        if (numberOfRefineries < 1) {
-            if (tryBuild(RobotType.REFINERY, Util.randomDirection())) {
-                System.out.println("created a refinery");
-                numberOfRefineries++;
+            if (numberOfRefineries < 1) {
+                if (tryBuild(RobotType.REFINERY, Util.randomDirection())) {
+                    System.out.println("created a refinery");
+                    numberOfRefineries++;
+                }
             }
         }
         findSoup(switchMoveLogicTurnCount);
