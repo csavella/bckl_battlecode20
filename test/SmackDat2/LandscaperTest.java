@@ -42,8 +42,27 @@ public class LandscaperTest {
     }
 
     @Test
+    public void tryDigCanDig() throws GameActionException {
+        landscaper.hqLoc = new MapLocation(1,1);
+        when(rc.canDigDirt(any())).thenReturn(true);
+        assertEquals(true, landscaper.tryDig());
+    }
+
+    @Test
+    public void tryDigCantDig() throws GameActionException {
+        landscaper.hqLoc = new MapLocation(1,1);
+        when(rc.canDigDirt(any())).thenReturn(false);
+        assertEquals(false, landscaper.tryDig());
+    }
+
+    @Test
     public void tryDigHQNotNull() throws GameActionException {
         landscaper.hqLoc = new MapLocation(1,1);
         landscaper.tryDig();
+    }
+
+    @Test
+    public void getNextDirection() {
+        assertEquals(landscaper.getNextDirection(Direction.NORTH), Direction.WEST);
     }
 }
