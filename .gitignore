@@ -21,7 +21,7 @@ src/lectureplayer
 *.ipr
 *.iws
 /.idea/
-
+*.class
 
 # User-specific stuff:
 battlecode-scaffold.iws
