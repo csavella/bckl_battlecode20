@@ -78,6 +78,7 @@ public class Communications {
     }
 
     public void broadcastSoupLocation(MapLocation loc ) throws GameActionException {
+
         int[] message = new int[7];
         message[0] = secretTeamKey;
         message[1] = 2;

@@ -55,17 +55,20 @@ public class CommunicationsTest {
 
     @Test
     public void broadcastDesignSchoolCreation() throws GameActionException {
-
+//        comms.broadcastedCreation = true;
+        comms.broadcastDesignSchoolCreation(new MapLocation(0,1));
     }
 
-    @Test
-    public void getNewDesignSchoolCount() throws GameActionException {
-        when(rc.getBlock(any())).thenReturn(null);
-        assertEquals(comms.getNewDesignSchoolCount(), new MapLocation(1,1));
-    }
+//    @Test
+//    public void getNewDesignSchoolCount() throws GameActionException {
+//        when(rc.getBlock(any())).thenReturn(new Transaction [1]);
+//        assertEquals(0,comms.getNewDesignSchoolCount());
+//    }
 
     @Test
-    public void broadcastSoupLocation() {
+    public void broadcastSoupLocation() throws GameActionException {
+//        when(rc.canSubmitTransaction(any(), any())).thenReturn(false);
+        comms.broadcastSoupLocation(new MapLocation(0,1));
     }
 
     @Test
