@@ -206,4 +206,85 @@ public class Communications {
 
         return false;
     }
+
+    public void broadcastStats(int secretTeamKey, int unitCode, int unitsProduced, int locX, int locY, int soup) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = unitCode;
+        message[2] = unitsProduced;
+        message[3] = locX;
+        message[4] = locY;
+
+        if (rc.canSubmitTransaction(message, soup)) {
+            rc.submitTransaction(message, soup);
+        }
+    }
+
+    public int[] receiveCount(int secretTeamKey) throws GameActionException {
+        int[] counts = new int[10];
+        for (int i = 0; i < 10; i++) {
+            counts[i] = 0;
+        }
+
+        for (int i = rc.getRoundNum(); i > rc.getRoundNum() - 25; i-- ) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] message = t.getMessage();
+
+                if (message[0] == secretTeamKey) {
+                    int unitCode = message[1];
+                    if (unitCode == 7) {
+                        // It's an HQ making miners
+                        counts[unitCode] += 1;
+                        counts[4] += message[2];
+                    } else if (unitCode == 2) {
+                        // It's a design center making landscapers
+                        counts[unitCode] += 1;
+                        counts[5] += message[2];
+                    } else if (unitCode == 3) {
+                        // It's a fulfillment center making drones
+                        counts[unitCode] += 1;
+                        counts[6] += message[2];
+                    } else {
+                        counts[unitCode] += 1;
+                    }
+
+                }
+            }
+        }
+
+        return counts;
+    }
+
+
+    public int[][] receiveLocation(int secretTeamKey, int unitCode) throws GameActionException {
+        // Create array of positions of refineries (at most 10)
+        int[][] positions = new int[10][];
+
+        // Dynamically allocate space
+        for (int i = 0; i < 10; i++) {
+            positions[i] = new int[2];
+            positions[i][0] = 0;
+            positions[i][1] = 0;
+        }
+
+        for (int i = rc.getRoundNum(); i > rc.getRoundNum() - 25; i-- ) {
+
+            int index = 0;
+
+            for (Transaction t : rc.getBlock(i)) {
+                int[] message = t.getMessage();
+
+                if (message[0] == secretTeamKey && message[1] == unitCode) {
+                    positions[index][0] = message[3];
+                    positions[index][1] = message[4];
+                    index++;
+                }
+                if (index == 10) {
+                    return positions;
+                }
+            }
+        }
+
+        return positions;
+    }
 }
