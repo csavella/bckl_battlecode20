@@ -20,11 +20,29 @@ public class LandscaperTest {
 
     @Test
     public void takeTurn() throws GameActionException {
-        RobotInfo[] ri = {mock(RobotInfo.class)};
+        MapLocation ml = new MapLocation(50,50);
+        RobotInfo[] ri = new RobotInfo[]{new RobotInfo(12, Team.A, RobotType.LANDSCAPER, 0, false, 0, 200, 0, ml)};
+        when(rc.isReady()).thenReturn(true);
         when(rc.senseNearbyRobots()).thenReturn(ri);
+        //System.out.println(rc.isReady());
+        when(rc.getLocation()).thenReturn(ml);
+        //when(ml.isAdjacentTo(any())).thenReturn(true);
+        //when(rc.isReady()).thenReturn(true);
         landscaper.takeTurn();
     }
-
+    @Test
+    public void takeTurnwhenAdjacentToHQ() throws GameActionException {
+        MapLocation ml = new MapLocation(5,5);
+        RobotInfo[] ri = new RobotInfo[]{new RobotInfo(12, Team.A, RobotType.LANDSCAPER, 0, false, 0, 200, 0, ml)};
+        when(rc.isReady()).thenReturn(true);
+        when(rc.senseNearbyRobots()).thenReturn(ri);
+        //System.out.println(rc.isReady());
+        when(rc.getLocation()).thenReturn(ml);
+        //when(ml.isAdjacentTo(any())).thenReturn(false);
+        //when(rc.isReady()).thenReturn(true);
+        landscaper.takeTurn();
+    }
+    //we donot need to test runLandscaper(), its alreday called by takeTurn()
     /* //This test is failing
     @Test
     public void runLandscaper() throws GameActionException {
