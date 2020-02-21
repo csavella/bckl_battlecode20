@@ -1,8 +1,6 @@
 package SmackDat2;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotController;
+import battlecode.common.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +22,8 @@ public class UnitTest {
 
     @Test
     public void takeTurn() throws GameActionException {
-        //testUnit.takeTurn();
+        when(rc.senseNearbyRobots()).thenReturn(new RobotInfo[]{new RobotInfo(101, Team.A,RobotType.HQ,0,false,0,0,0,new MapLocation(1,1))});
+        testUnit.takeTurn();
     }
 
     @Test
