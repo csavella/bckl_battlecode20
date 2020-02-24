@@ -24,6 +24,7 @@ public class DeliveryDroneTest {
         when(rc.senseNearbyRobots()).thenReturn(ri);
         when(rc.getTeam()).thenReturn(Team.A);
         when(rc.isCurrentlyHoldingUnit()).thenReturn(true);
+        when(rc.getLocation()).thenReturn(new MapLocation(2, 2));
         ddTest.takeTurn();
     }
     /*public void runDeliveryDrone() throws GameActionException {
