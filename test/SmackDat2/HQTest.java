@@ -24,6 +24,7 @@ public class HQTest {
         when(rc.getTeam()).thenReturn(Team.A);
         for (Direction dir : Util.directions)
             when(hqtest.tryBuild(RobotType.MINER,dir)).thenReturn(true);
+        when(rc.senseNearbyRobots()).thenReturn(new RobotInfo[0]);
         hqtest.takeTurn();
         //System.out.println();
     }
