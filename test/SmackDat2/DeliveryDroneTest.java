@@ -67,7 +67,7 @@ public class DeliveryDroneTest {
         //when(rc.getLocation().isAdjacentTo(any())).thenReturn(true);
         //assertEquals(ri.length,0);
 
-        ddTest.takeTurn();
+        //ddTest.takeTurn();
     }
 
     @Test

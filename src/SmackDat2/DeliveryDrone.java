@@ -2,8 +2,6 @@ package SmackDat2;
 
 import battlecode.common.*;
 
-import static SmackDat.RobotPlayer.getHQLocation;
-
 public class DeliveryDrone extends Unit {
 
 
