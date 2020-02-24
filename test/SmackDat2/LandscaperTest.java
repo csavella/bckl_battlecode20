@@ -36,8 +36,9 @@ public class LandscaperTest {
         RobotInfo[] ri = new RobotInfo[]{new RobotInfo(12, Team.A, RobotType.LANDSCAPER, 0, false, 0, 200, 0, ml)};
         when(rc.isReady()).thenReturn(true);
         when(rc.senseNearbyRobots()).thenReturn(ri);
-        //System.out.println(rc.isReady());
         when(rc.getLocation()).thenReturn(ml);
+        //System.out.println(rc.isReady());
+        //when(rc.getLocation().isAdjacentTo(landscaper.comms.getHqLocFromBlockchain())).thenReturn(false);
         //when(ml.isAdjacentTo(any())).thenReturn(false);
         //when(rc.isReady()).thenReturn(true);
         landscaper.takeTurn();
@@ -82,5 +83,9 @@ public class LandscaperTest {
     @Test
     public void getNextDirection() {
         assertEquals(landscaper.getNextDirection(Direction.NORTH), Direction.WEST);
+        assertEquals(landscaper.getNextDirection(Direction.WEST), Direction.SOUTH);
+        assertEquals(landscaper.getNextDirection(Direction.SOUTH), Direction.EAST);
+        assertEquals(landscaper.getNextDirection(Direction.EAST), Direction.NORTH);
+
     }
 }
