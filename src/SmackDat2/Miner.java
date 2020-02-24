@@ -64,8 +64,15 @@ public class Miner extends Unit {
                 }
             }
         }
+
+        if (rc.getRoundNum() > 300 && rc.getTeamSoup() > 255 && !comms.netGunHasBeenMade()) {
+            comms.broadcastNetgunMade();
+            rc.buildRobot(RobotType.NET_GUN, Direction.CENTER);
+        }
+
         findSoup(switchMoveLogicTurnCount);
     }
+
 
 
     /* sense soup and move towards it. If already carrying a bunch of soup, bring it back to the HQ.

@@ -77,6 +77,28 @@ public class Communications {
         return count;
     }
 
+    //code number is 645
+    boolean netGunHasBeenMade() throws GameActionException {
+        for (int i = 300; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] message = t.getMessage();
+                if (message[0] == secretTeamKey && message[1] == 645) return true;
+            }
+        }
+
+        return false;
+    }
+
+    //code number is 645
+    void broadcastNetgunMade() throws GameActionException{
+        int[] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 645;
+        if (rc.canSubmitTransaction(message, 2))
+            rc.submitTransaction(message, 2);
+
+    }
+
     public void broadcastSoupLocation(MapLocation loc ) throws GameActionException {
 
         int[] message = new int[7];
