@@ -25,7 +25,7 @@ public class HQ extends Shooter {
                 rc.shootUnit(r.ID);
 
         }
-        
+
         if(numMiners < 3) {
             for (Direction dir : Util.directions)
                 if(tryBuild(RobotType.MINER, dir)){

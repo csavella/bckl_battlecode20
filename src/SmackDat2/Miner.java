@@ -29,6 +29,17 @@ public class Miner extends Unit {
         comms.updateSoupLocations(soupLocations);
         checkIfSoupGone();
 
+        //Code for miners to shoot enemy drones
+        Team myTeamColor = rc.getTeam();
+
+        RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
+        for (RobotInfo r : nearbyRobots) {
+            // TEST: System.out.println("Robot nearby");
+            if (r.team != myTeamColor && rc.canShootUnit(r.ID))
+                rc.shootUnit(r.ID);
+
+        }
+
         for (Direction dir : Util.directions)
             if (tryMine(dir)) {
                 System.out.println("I mined soup! " + rc.getSoupCarrying());
