@@ -74,6 +74,9 @@ public class Miner extends Unit {
                     numberOfRefineries++;
                 }
             }
+
+            if(!comms.vaporatorExists())
+                tryBuild(RobotType.VAPORATOR, Util.randomDirection());
         }
 
         if (rc.getRoundNum() > 300 && rc.getTeamSoup() > 255 && !comms.netGunHasBeenMade()) {

@@ -49,6 +49,30 @@ public class Communications {
         return new MapLocation(1,1);
     }
 
+    //code for vaporator is 9645
+    public boolean vaporatorExists() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++){
+            for(Transaction tx : rc.getBlock(i)) {
+                int[] mess = tx.getMessage();
+                if(mess[0] == secretTeamKey && mess[1] == 9645)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    //code for vaporator is 9645
+    public void broadcastVaporatorExists() throws GameActionException{
+        int[] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 9645;
+
+        if (rc.canSubmitTransaction(message, 2)) {
+            rc.submitTransaction(message, 2);
+        }
+    }
+
     public boolean broadcastedCreation = false;
     public void broadcastDesignSchoolCreation(MapLocation loc) throws GameActionException {
         if(broadcastedCreation) return; // don't re-broadcast

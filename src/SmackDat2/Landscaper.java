@@ -28,7 +28,15 @@ public class Landscaper extends Unit {
                 //navigateTo(HQLocation, rc.getLocation());
                 Direction t = rc.getLocation().directionTo(HQLocation);
                 System.out.println("hi");
-                rc.move(rc.getLocation().directionTo(HQLocation));
+                if (rc.canMove(rc.getLocation().directionTo(HQLocation)))
+                    rc.move(rc.getLocation().directionTo(HQLocation));
+
+                else if (rc.canMove(Direction.EAST))
+                    rc.move(Direction.EAST);
+
+                else
+                    if (rc.canMove(Direction.WEST))
+                        rc.move(Direction.WEST);
             }
             else {
                 //Figure out which of the 8 squares around the HQ it's on, so it knows where to take dirt from

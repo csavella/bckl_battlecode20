@@ -29,16 +29,23 @@ public class DeliveryDrone extends Unit {
         else if (rc.isReady()) {
 
             //if too close to HQ, move away
-            if (rc.getLocation().distanceSquaredTo(hqLocation) < 3) {
+            if (rc.getLocation().distanceSquaredTo(hqLocation) < 9) {
                 if (rc.canMove(rc.getLocation().directionTo(hqLocation).opposite()))
                     rc.move(rc.getLocation().directionTo(hqLocation).opposite());
             }
 
             else {
+                if(rc.getLocation().distanceSquaredTo(hqLocation) > 30) {
+                    if (rc.canMove(rc.getLocation().directionTo(hqLocation))) {
+                        rc.move(rc.getLocation().directionTo(hqLocation));
+                        return;
+                    }
+                }
+
                 RobotInfo[] robots = rc.senseNearbyRobots();
 
                 for (RobotInfo r : robots) {
-                    if (r.team == enemy) {
+                    if (r.team == enemy || r.type == RobotType.COW) {
                         if (rc.getLocation().isAdjacentTo(r.getLocation())) {
                             if (rc.canPickUpUnit(r.getID())) {
                                 rc.pickUpUnit(r.getID());
@@ -49,7 +56,7 @@ public class DeliveryDrone extends Unit {
                 }
                 //move to the enemy direction
                 for (RobotInfo r : robots) {
-                    if (r.team == enemy) {
+                    if (r.team == enemy || r.type == RobotType.COW) {
                         if(rc.canMove(rc.getLocation().directionTo(r.getLocation())))
                             rc.move(rc.getLocation().directionTo(r.getLocation()));
                         break;
