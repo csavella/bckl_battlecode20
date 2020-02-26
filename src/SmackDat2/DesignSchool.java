@@ -16,6 +16,9 @@ public class DesignSchool extends Building {
         // will only actually happen if we haven't already broadcasted the creation
         comms.broadcastDesignSchoolCreation(rc.getLocation());
 
+        if(!comms.designSchoolExists())
+            comms.broadcastDesignSchoolExists();
+
         for (Direction dir : Util.directions) {
             if(!comms.landscaperExists() && tryBuild(RobotType.LANDSCAPER, dir)) {
                 comms.broadcastLandscaperExists();

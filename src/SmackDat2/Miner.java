@@ -29,6 +29,17 @@ public class Miner extends Unit {
         comms.updateSoupLocations(soupLocations);
         checkIfSoupGone();
 
+        //Code for miners to shoot enemy drones
+        Team myTeamColor = rc.getTeam();
+
+        RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
+        for (RobotInfo r : nearbyRobots) {
+            // TEST: System.out.println("Robot nearby");
+            if (r.team != myTeamColor && rc.canShootUnit(r.ID))
+                rc.shootUnit(r.ID);
+
+        }
+
         for (Direction dir : Util.directions)
             if (tryMine(dir)) {
                 System.out.println("I mined soup! " + rc.getSoupCarrying());
@@ -44,9 +55,20 @@ public class Miner extends Unit {
 
         findHQ();
         if (!rc.getLocation().isWithinDistanceSquared(hqLoc,9)) {
+            /*
             if (numDesignSchools < 1) {
                 if (tryBuild(RobotType.DESIGN_SCHOOL, Util.randomDirection()))
                     System.out.println("created a design school");
+            }
+            */
+
+            if(!comms.designSchoolExists()){
+                for (Direction dir : directions) {
+                    if (tryBuild(RobotType.DESIGN_SCHOOL, dir)) {
+                        break;
+                    }
+                }
+
             }
 
             if (!comms.fulfillmentCenterExists()) {
@@ -63,9 +85,19 @@ public class Miner extends Unit {
                     numberOfRefineries++;
                 }
             }
+
+            if(!comms.vaporatorExists())
+                tryBuild(RobotType.VAPORATOR, Util.randomDirection());
         }
+
+        if (rc.getRoundNum() > 300 && rc.getTeamSoup() > 255 && !comms.netGunHasBeenMade()) {
+            comms.broadcastNetgunMade();
+            rc.buildRobot(RobotType.NET_GUN, Direction.CENTER);
+        }
+
         findSoup(switchMoveLogicTurnCount);
     }
+
 
 
     /* sense soup and move towards it. If already carrying a bunch of soup, bring it back to the HQ.

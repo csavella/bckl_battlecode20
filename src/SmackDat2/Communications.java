@@ -49,6 +49,30 @@ public class Communications {
         return new MapLocation(1,1);
     }
 
+    //code for vaporator is 9645
+    public boolean vaporatorExists() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++){
+            for(Transaction tx : rc.getBlock(i)) {
+                int[] mess = tx.getMessage();
+                if(mess[0] == secretTeamKey && mess[1] == 9645)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    //code for vaporator is 9645
+    public void broadcastVaporatorExists() throws GameActionException{
+        int[] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 9645;
+
+        if (rc.canSubmitTransaction(message, 2)) {
+            rc.submitTransaction(message, 2);
+        }
+    }
+
     public boolean broadcastedCreation = false;
     public void broadcastDesignSchoolCreation(MapLocation loc) throws GameActionException {
         if(broadcastedCreation) return; // don't re-broadcast
@@ -75,6 +99,28 @@ public class Communications {
             }
         }
         return count;
+    }
+
+    //code number is 645
+    boolean netGunHasBeenMade() throws GameActionException {
+        for (int i = 300; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] message = t.getMessage();
+                if (message[0] == secretTeamKey && message[1] == 645) return true;
+            }
+        }
+
+        return false;
+    }
+
+    //code number is 645
+    void broadcastNetgunMade() throws GameActionException{
+        int[] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 645;
+        if (rc.canSubmitTransaction(message, 2))
+            rc.submitTransaction(message, 2);
+
     }
 
     public void broadcastSoupLocation(MapLocation loc ) throws GameActionException {
@@ -147,6 +193,25 @@ public class Communications {
         return positions;
     }
 
+    //Checks the blockchain for messages with the design school int (1877)
+    public boolean designSchoolExists() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++){
+            for(Transaction t : rc.getBlock(i)){
+                int[] message = t.getMessage();
+                if(message[0] == secretTeamKey && message[1] == 1877) return true;
+            }
+        }
+        return false;
+    }
+
+    public void broadcastDesignSchoolExists() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 1877;
+
+        if(rc.canSubmitTransaction(message, 2))
+            rc.submitTransaction(message, 2);
+    }
 
     //Checks the blockchain for messages with the fulfillment center int (77)
     public boolean fulfillmentCenterExists() throws GameActionException {
