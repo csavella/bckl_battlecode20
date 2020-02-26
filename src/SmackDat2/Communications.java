@@ -193,6 +193,25 @@ public class Communications {
         return positions;
     }
 
+    //Checks the blockchain for messages with the design school int (1877)
+    public boolean designSchoolExists() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++){
+            for(Transaction t : rc.getBlock(i)){
+                int[] message = t.getMessage();
+                if(message[0] == secretTeamKey && message[1] == 1877) return true;
+            }
+        }
+        return false;
+    }
+
+    public void broadcastDesignSchoolExists() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 1877;
+
+        if(rc.canSubmitTransaction(message, 2))
+            rc.submitTransaction(message, 2);
+    }
 
     //Checks the blockchain for messages with the fulfillment center int (77)
     public boolean fulfillmentCenterExists() throws GameActionException {

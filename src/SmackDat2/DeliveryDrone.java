@@ -67,6 +67,10 @@ public class DeliveryDrone extends Unit {
     }
 
      public void lookForWater(MapLocation loc) throws GameActionException {
+        for(Direction dir : Direction.allDirections()) {
+            if (rc.senseFlooding(rc.getLocation().add(dir)))
+                rc.dropUnit(dir);
+        }
         MapLocation start = loc.add(Direction.WEST).add(Direction.WEST).add(Direction.WEST)
                 .add(Direction.SOUTH).add(Direction.SOUTH).add(Direction.SOUTH);
 

@@ -55,9 +55,20 @@ public class Miner extends Unit {
 
         findHQ();
         if (!rc.getLocation().isWithinDistanceSquared(hqLoc,9)) {
+            /*
             if (numDesignSchools < 1) {
                 if (tryBuild(RobotType.DESIGN_SCHOOL, Util.randomDirection()))
                     System.out.println("created a design school");
+            }
+            */
+
+            if(!comms.designSchoolExists()){
+                for (Direction dir : directions) {
+                    if (tryBuild(RobotType.DESIGN_SCHOOL, dir)) {
+                        break;
+                    }
+                }
+
             }
 
             if (!comms.fulfillmentCenterExists()) {
