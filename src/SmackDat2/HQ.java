@@ -26,7 +26,12 @@ public class HQ extends Shooter {
 
         }
 
-        if(numMiners < 3) {
+        // will only actually happen if we haven't already broadcast the creation
+        if(rc.getRoundNum() % 25 == 0){
+            comms.broadcastStats(comms.secretTeamKey,7,numMiners,rc.getLocation().x,rc.getLocation().y,comms.soupAmount);
+        }
+
+        if(comms.receiveCount(comms.secretTeamKey)[4] < comms.buildOrder[4]) {
             for (Direction dir : Util.directions)
                 if(tryBuild(RobotType.MINER, dir)){
                     numMiners++;

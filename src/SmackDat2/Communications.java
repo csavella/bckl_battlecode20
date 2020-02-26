@@ -21,6 +21,11 @@ public class Communications {
         "soup location",
     };
 
+    public int [] guessBlockchainArray = new int []{-1,-1,-1,-1,-1,-1,-1};
+    public int soupAmount = 4;
+
+    public int [] buildOrder = new int[] {1,1,1,1,4,4,4,1,0,0};
+
     public Communications(RobotController r) {
         rc = r;
     }
@@ -48,6 +53,38 @@ public class Communications {
         }
         return new MapLocation(1,1);
     }
+
+    public void guessBlockchain() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++){
+            for(Transaction tx : rc.getBlock(i)) {
+                int[] mess = tx.getMessage();
+                    if(mess[0] != secretTeamKey){
+                        for (int j = 0; j < 7; j++) {
+                            guessBlockchainArray[j] = mess[j];
+                        }
+                    }
+            }
+        }
+    }
+
+    public void spamBlockChain() throws GameActionException {
+        if (guessBlockchainArray[0] == -1) {
+            guessBlockchain();
+        }
+
+        for (int i = 0; i < 7; i++){
+            for(int j = 0; j < 7; j++) {
+                int[] mess = new int[7];
+                if(i == j) {
+                    mess[j] = guessBlockchainArray[j];
+                } else {
+                    mess[j] = 64;
+                }
+                rc.submitTransaction(mess,soupAmount-1);
+            }
+        }
+    }
+
 
     //code for vaporator is 9645
     public boolean vaporatorExists() throws GameActionException {
@@ -252,4 +289,87 @@ public class Communications {
 
         return false;
     }
+
+    public void broadcastStats(int secretTeamKey, int unitCode, int unitsProduced, int locX, int locY, int soup) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = unitCode;
+        message[2] = unitsProduced;
+        message[3] = locX;
+        message[4] = locY;
+
+        if (rc.canSubmitTransaction(message, soup)) {
+            rc.submitTransaction(message, soup);
+        }
+    }
+
+    public int[] receiveCount(int secretTeamKey) throws GameActionException {
+        int[] counts = new int[10];
+        for (int i = 0; i < 10; i++) {
+            counts[i] = 0;
+        }
+
+        for (int i = rc.getRoundNum(); i > rc.getRoundNum() - 25; i-- ) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] message = t.getMessage();
+
+                if (message[0] == secretTeamKey) {
+                    int unitCode = message[1];
+                    if (unitCode == 7) {
+                        // It's an HQ making miners
+                        counts[unitCode] += 1;
+                        counts[4] += message[2];
+                    } else if (unitCode == 2) {
+                        // It's a design center making landscapers
+                        counts[unitCode] += 1;
+                        counts[5] += message[2];
+                    } else if (unitCode == 3) {
+                        // It's a fulfillment center making drones
+                        counts[unitCode] += 1;
+                        counts[6] += message[2];
+                    } else {
+                        counts[unitCode] += 1;
+                    }
+
+                }
+            }
+        }
+
+        return counts;
+    }
+
+
+    public int[][] receiveLocation(int secretTeamKey, int unitCode) throws GameActionException {
+        // Create array of positions of refineries (at most 10)
+        int[][] positions = new int[10][];
+
+        // Dynamically allocate space
+        for (int i = 0; i < 10; i++) {
+            positions[i] = new int[2];
+            positions[i][0] = 0;
+            positions[i][1] = 0;
+        }
+
+        for (int i = rc.getRoundNum(); i > rc.getRoundNum() - 25; i-- ) {
+
+            int index = 0;
+
+            for (Transaction t : rc.getBlock(i)) {
+                int[] message = t.getMessage();
+
+                if (message[0] == secretTeamKey && message[1] == unitCode) {
+                    positions[index][0] = message[3];
+                    positions[index][1] = message[4];
+                    index++;
+                }
+                if (index == 10) {
+                    return positions;
+                }
+            }
+        }
+
+        return positions;
+    }
+
+
 }

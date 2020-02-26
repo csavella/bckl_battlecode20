@@ -12,14 +12,22 @@ public class DesignSchool extends Building {
 
     public void takeTurn() throws GameActionException {
         super.takeTurn();
-        
+
         // will only actually happen if we haven't already broadcasted the creation
         comms.broadcastDesignSchoolCreation(rc.getLocation());
 
+        int landscapers = 0;
+
+        // will only actually happen if we haven't already broadcast the creation
+        if(rc.getRoundNum() % 25 == 1){
+            comms.broadcastStats(comms.secretTeamKey,5,landscapers,rc.getLocation().x,rc.getLocation().y,comms.soupAmount);
+        }
+
         for (Direction dir : Util.directions) {
-            if(!comms.landscaperExists() && tryBuild(RobotType.LANDSCAPER, dir)) {
+            if(comms.receiveCount(comms.secretTeamKey)[5] < comms.buildOrder[5] && tryBuild(RobotType.LANDSCAPER, dir)) {
                 comms.broadcastLandscaperExists();
                 System.out.println("made a landscaper");
+                landscapers++;
             }
         }
     }

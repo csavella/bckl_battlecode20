@@ -15,8 +15,10 @@ public class Vaporator extends Building {
     }
 
     public void runVaporator() throws GameActionException{
-        if(!comms.vaporatorExists())
-            comms.broadcastVaporatorExists();
+        // will only actually happen if we haven't already broadcast the creation
+        if(rc.getRoundNum() % 25 == 4){
+            comms.broadcastStats(comms.secretTeamKey,1,0,rc.getLocation().x,rc.getLocation().y,comms.soupAmount);
+        }
 
     }
 }

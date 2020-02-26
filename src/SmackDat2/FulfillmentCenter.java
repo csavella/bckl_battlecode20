@@ -10,18 +10,22 @@ public class FulfillmentCenter extends Building {
         super(r);
     }
 
+    public int dronesProduced = 0;
+
     public void takeTurn() throws GameActionException {
         super.takeTurn();
 
         // will only actually happen if we haven't already broadcast the creation
-        if(!comms.fulfillmentCenterExists()){
-            comms.broadcastFulfillmentCenterExists();
+        if(rc.getRoundNum() % 25 == 2){
+            comms.broadcastStats(comms.secretTeamKey,3,dronesProduced,rc.getLocation().x,rc.getLocation().y,comms.soupAmount);
         }
 
         for (Direction dir : Util.directions) {
-            if(comms.deliveryDroneCount() < 3 && tryBuild(RobotType.DELIVERY_DRONE, dir)) {
+            if(comms.receiveCount(comms.secretTeamKey)[6] < comms.buildOrder[6] && tryBuild(RobotType.DELIVERY_DRONE, dir)) {
                 comms.broadcastDeliveryDrone();
+                dronesProduced++;
                 System.out.println("made a delivery drone");
             }
         }
-    }}
+    }
+}

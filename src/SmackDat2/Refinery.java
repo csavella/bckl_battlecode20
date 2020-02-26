@@ -22,8 +22,9 @@ public class Refinery extends Building {
         System.out.println("Pollution: " + rc.sensePollution(rc.getLocation()));
 
         // Every 25 rounds broadcast location
-        if (rc.getRoundNum() % 25 == 0) {
-            comms.sendRefineryLocation(rc.getLocation());
+        // will only actually happen if we haven't already broadcast the creation
+        if(rc.getRoundNum() % 25 == 3){
+            comms.broadcastStats(comms.secretTeamKey,0,0,rc.getLocation().x,rc.getLocation().y,comms.soupAmount);
         }
     }
 }
