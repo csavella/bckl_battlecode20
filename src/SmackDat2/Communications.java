@@ -196,9 +196,12 @@ public class Communications {
     //Checks the blockchain for messages with the design school int (1877)
     public boolean designSchoolExists() throws GameActionException {
         for (int i = 1; i < rc.getRoundNum(); i++){
-            for(Transaction t : rc.getBlock(i)){
-                int[] message = t.getMessage();
-                if(message[0] == secretTeamKey && message[1] == 1877) return true;
+            Transaction[] txs = rc.getBlock(i);
+            if(txs != null) {
+                for (Transaction t : txs) {
+                    int[] message = t.getMessage();
+                    if (message[0] == secretTeamKey && message[1] == 1877) return true;
+                }
             }
         }
         return false;
@@ -216,9 +219,12 @@ public class Communications {
     //Checks the blockchain for messages with the fulfillment center int (77)
     public boolean fulfillmentCenterExists() throws GameActionException {
         for (int i = 1; i < rc.getRoundNum(); i++){
-            for(Transaction t : rc.getBlock(i)){
-                int[] message = t.getMessage();
-                if(message[0] == secretTeamKey && message[1] == 77) return true;
+            Transaction[] txs = rc.getBlock(i);
+            if(txs != null) {
+                for (Transaction t : txs) {
+                    int[] message = t.getMessage();
+                    if (message[0] == secretTeamKey && message[1] == 77) return true;
+                }
             }
         }
         return false;
@@ -246,9 +252,12 @@ public class Communications {
         int droneCount = 0;
 
         for (int i = 1; i < rc.getRoundNum(); i++){
-            for(Transaction t : rc.getBlock(i)){
-                int[] message = t.getMessage();
-                if(message[0] == secretTeamKey && message[1] == 88) droneCount+=1;
+            Transaction[] txs = rc.getBlock(i);
+            if(txs != null) {
+                for (Transaction t : txs) {
+                    int[] message = t.getMessage();
+                    if (message[0] == secretTeamKey && message[1] == 88) droneCount += 1;
+                }
             }
         }
 
@@ -265,7 +274,8 @@ public class Communications {
         for (int i = 1; i < rc.getRoundNum(); i++){
             for(Transaction t : rc.getBlock(i)){
                 int[] message = t.getMessage();
-                if(message[0] == secretTeamKey && message[1] == 199) return true;
+                if(message[0] == secretTeamKey && message[1] == 199)
+                    return true;
             }
         }
 

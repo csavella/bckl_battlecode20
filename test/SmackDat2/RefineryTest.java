@@ -6,12 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 public class RefineryTest {
     private Refinery ref;
     private RobotController rc;
-    private Communications comms;
 
     @Before
     public void setUp() throws Exception {
@@ -21,11 +20,19 @@ public class RefineryTest {
     }
 
     @Test
-    public void takeTurn() {
+    public void takeTurn() throws GameActionException{
+        ref.takeTurn();
     }
 
     @Test
-    public void runRefinery() throws GameActionException {
+    public void runRefineryTurn50() throws GameActionException {
+        when(rc.getRoundNum()).thenReturn(50);
+        ref.runRefinery();
+    }
+
+    @Test
+    public void runRefineryTurn49() throws GameActionException {
+        when(rc.getRoundNum()).thenReturn(49);
         ref.runRefinery();
     }
 }

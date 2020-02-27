@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Communications.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bckl_battlecode20$Sprint3UnitTesting.exec</a> &gt; <a href="index.source.html" class="el_package">SmackDat2</a> &gt; <span class="el_source">Communications.java</span></div><h1>Communications.java</h1><pre class="source lang-java linenums">package SmackDat2;
+
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotController;
+import battlecode.common.Transaction;
+
+import java.util.ArrayList;
+
+public class Communications {
+    RobotController rc;
+
+    // state related only to communications should go here
+
+    // all messages from our team should start with this so we can tell them apart
+    static final int secretTeamKey = 729384;
+    // the second entry in every message tells us what kind of message it is. e.g. 0 means it contains the HQ location
+<span class="fc" id="L18">    static final String[] messageType = {</span>
+        &quot;HQ loc&quot;,
+        &quot;design school created&quot;,
+        &quot;soup location&quot;,
+    };
+
+<span class="fc" id="L24">    public Communications(RobotController r) {</span>
+<span class="fc" id="L25">        rc = r;</span>
+<span class="fc" id="L26">    }</span>
+
+    public void sendHqLoc(MapLocation loc) throws GameActionException {
+<span class="fc" id="L29">        int[] message = new int[7];</span>
+<span class="fc" id="L30">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L31">        message[1] = 0; // 0 Designates to HQ Location</span>
+<span class="fc" id="L32">        message[2] = loc.x; // x coord of HQ</span>
+<span class="fc" id="L33">        message[3] = loc.y; // y coord of HQ</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (rc.canSubmitTransaction(message, 3))</span>
+<span class="fc" id="L35">            rc.submitTransaction(message, 3);</span>
+<span class="fc" id="L36">    }</span>
+    //Scan the whole blockchain from round 1 for our HQ message announcing the HQ location
+    //Return 1,1 MapLocation if for some reason we never broadcast our location
+    public MapLocation getHqLocFromBlockchain() throws GameActionException {
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        for (int i = 1; i &lt; rc.getRoundNum(); i++){</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">            for(Transaction tx : rc.getBlock(i)) {</span>
+<span class="nc" id="L42">                int[] mess = tx.getMessage();</span>
+<span class="nc bnc" id="L43" title="All 4 branches missed.">                if(mess[0] == secretTeamKey &amp;&amp; mess[1] == 0){</span>
+<span class="nc" id="L44">                    System.out.println(&quot;found the HQ!&quot;);</span>
+<span class="nc" id="L45">                    return new MapLocation(mess[2], mess[3]);</span>
+                }
+            }
+        }
+<span class="fc" id="L49">        return new MapLocation(1,1);</span>
+    }
+
+    //code for vaporator is 9645
+    public boolean vaporatorExists() throws GameActionException {
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        for (int i = 1; i &lt; rc.getRoundNum(); i++){</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            for(Transaction tx : rc.getBlock(i)) {</span>
+<span class="nc" id="L56">                int[] mess = tx.getMessage();</span>
+<span class="nc bnc" id="L57" title="All 4 branches missed.">                if(mess[0] == secretTeamKey &amp;&amp; mess[1] == 9645)</span>
+<span class="nc" id="L58">                    return true;</span>
+            }
+        }
+
+<span class="nc" id="L62">        return false;</span>
+    }
+
+    //code for vaporator is 9645
+    public void broadcastVaporatorExists() throws GameActionException{
+<span class="fc" id="L67">        int[] message = new int[7];</span>
+<span class="fc" id="L68">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L69">        message[1] = 9645;</span>
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (rc.canSubmitTransaction(message, 2)) {</span>
+<span class="fc" id="L72">            rc.submitTransaction(message, 2);</span>
+        }
+<span class="fc" id="L74">    }</span>
+
+<span class="fc" id="L76">    public boolean broadcastedCreation = false;</span>
+    public void broadcastDesignSchoolCreation(MapLocation loc) throws GameActionException {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if(broadcastedCreation) return; // don't re-broadcast</span>
+
+<span class="fc" id="L80">        int[] message = new int[7];</span>
+<span class="fc" id="L81">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L82">        message[1] = 1;</span>
+<span class="fc" id="L83">        message[2] = loc.x; // x coord of HQ</span>
+<span class="fc" id="L84">        message[3] = loc.y; // y coord of HQ</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (rc.canSubmitTransaction(message, 3)) {</span>
+<span class="fc" id="L86">            rc.submitTransaction(message, 3);</span>
+<span class="fc" id="L87">            broadcastedCreation = true;</span>
+        }
+<span class="fc" id="L89">    }</span>
+
+    // check the latest block for unit creation messages
+    public int getNewDesignSchoolCount() throws GameActionException {
+<span class="nc" id="L93">        int count = 0;</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        for(Transaction tx : rc.getBlock(rc.getRoundNum() - 1)) {</span>
+<span class="nc" id="L95">            int[] mess = tx.getMessage();</span>
+<span class="nc bnc" id="L96" title="All 4 branches missed.">            if(mess[0] == secretTeamKey &amp;&amp; mess[1] == 1){</span>
+<span class="nc" id="L97">                System.out.println(&quot;heard about a cool new school&quot;);</span>
+<span class="nc" id="L98">                count += 1;</span>
+            }
+        }
+<span class="nc" id="L101">        return count;</span>
+    }
+
+    //code number is 645
+    boolean netGunHasBeenMade() throws GameActionException {
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        for (int i = 300; i &lt; rc.getRoundNum(); i++) {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">            for (Transaction t : rc.getBlock(i)) {</span>
+<span class="nc" id="L108">                int[] message = t.getMessage();</span>
+<span class="nc bnc" id="L109" title="All 4 branches missed.">                if (message[0] == secretTeamKey &amp;&amp; message[1] == 645) return true;</span>
+            }
+        }
+
+<span class="nc" id="L113">        return false;</span>
+    }
+
+    //code number is 645
+    void broadcastNetgunMade() throws GameActionException{
+<span class="fc" id="L118">        int[] message = new int[7];</span>
+<span class="fc" id="L119">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L120">        message[1] = 645;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (rc.canSubmitTransaction(message, 2))</span>
+<span class="fc" id="L122">            rc.submitTransaction(message, 2);</span>
+
+<span class="fc" id="L124">    }</span>
+
+    public void broadcastSoupLocation(MapLocation loc ) throws GameActionException {
+
+<span class="fc" id="L128">        int[] message = new int[7];</span>
+<span class="fc" id="L129">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L130">        message[1] = 2;</span>
+<span class="fc" id="L131">        message[2] = loc.x; // x coord of HQ</span>
+<span class="fc" id="L132">        message[3] = loc.y; // y coord of HQ</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        if (rc.canSubmitTransaction(message, 3)) {</span>
+<span class="fc" id="L134">            rc.submitTransaction(message, 3);</span>
+<span class="fc" id="L135">            System.out.println(&quot;new soup!&quot; + loc);</span>
+        }
+<span class="fc" id="L137">    }</span>
+
+    public void updateSoupLocations(ArrayList&lt;MapLocation&gt; soupLocations) throws GameActionException {
+<span class="nc bnc" id="L140" title="All 2 branches missed.">        for(Transaction tx : rc.getBlock(rc.getRoundNum() - 1)) {</span>
+<span class="nc" id="L141">            int[] mess = tx.getMessage();</span>
+<span class="nc bnc" id="L142" title="All 4 branches missed.">            if(mess[0] == secretTeamKey &amp;&amp; mess[1] == 2){</span>
+                // TODO: don't add duplicate locations
+<span class="nc" id="L144">                System.out.println(&quot;heard about a tasty new soup location&quot;);</span>
+<span class="nc" id="L145">                soupLocations.add(new MapLocation(mess[2], mess[3]));</span>
+            }
+        }
+<span class="nc" id="L148">    }</span>
+
+    public void sendRefineryLocation(MapLocation loc) throws GameActionException {
+<span class="fc" id="L151">        int[] message = new int[7];</span>
+<span class="fc" id="L152">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L153">        message[1] = 2; //0 Designates it is Refinery Location</span>
+<span class="fc" id="L154">        message[2] = loc.x;</span>
+<span class="fc" id="L155">        message[3] = loc.y;</span>
+
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        if (rc.canSubmitTransaction(message, 2)) {</span>
+<span class="fc" id="L158">            rc.submitTransaction(message, 2);</span>
+
+<span class="fc" id="L160">            System.out.println(&quot;I'm transmitting!&quot;);</span>
+        }
+<span class="fc" id="L162">    }</span>
+
+    // Receives locations
+    public int [][] getRefineryLocations() throws GameActionException {
+        // Create array of positions of refineries (at most 10)
+<span class="nc" id="L167">        int[][] positions = new int[10][];</span>
+
+        // Dynamically allocate space
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        for (int i = 0; i &lt; 10; i++) {</span>
+<span class="nc" id="L171">            positions[i] = new int[2];</span>
+<span class="nc" id="L172">            positions[i][0] = 0;</span>
+<span class="nc" id="L173">            positions[i][1] = 0;</span>
+        }
+
+<span class="nc bnc" id="L176" title="All 2 branches missed.">        for (int i = rc.getRoundNum(); i &gt; rc.getRoundNum() - 26; i-- ) {</span>
+
+<span class="nc" id="L178">            int index = 0;</span>
+
+<span class="nc bnc" id="L180" title="All 2 branches missed.">            for (Transaction t : rc.getBlock(i)) {</span>
+<span class="nc" id="L181">                int[] message = t.getMessage();</span>
+
+                //If the message uses our secret key and the message[1] field has 0 (HQLocation designator)
+<span class="nc bnc" id="L184" title="All 4 branches missed.">                if (message[0] == secretTeamKey &amp;&amp; message[1] == 2) {</span>
+                    //TEST: System.out.println(&quot;I got a message&quot;);
+<span class="nc" id="L186">                    positions[index][0] = message[2];</span>
+<span class="nc" id="L187">                    positions[index][1] = message[3];</span>
+<span class="nc" id="L188">                    index += 1;</span>
+                }
+            }
+        }
+
+<span class="nc" id="L193">        return positions;</span>
+    }
+
+    //Checks the blockchain for messages with the design school int (1877)
+    public boolean designSchoolExists() throws GameActionException {
+<span class="fc bfc" id="L198" title="All 2 branches covered.">        for (int i = 1; i &lt; rc.getRoundNum(); i++){</span>
+<span class="fc" id="L199">            Transaction[] txs = rc.getBlock(i);</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">            if(txs != null) {</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">                for (Transaction t : txs) {</span>
+<span class="fc" id="L202">                    int[] message = t.getMessage();</span>
+<span class="fc bfc" id="L203" title="All 4 branches covered.">                    if (message[0] == secretTeamKey &amp;&amp; message[1] == 1877) return true;</span>
+                }
+            }
+        }
+<span class="fc" id="L207">        return false;</span>
+    }
+
+    public void broadcastDesignSchoolExists() throws GameActionException{
+<span class="fc" id="L211">        int [] message = new int[7];</span>
+<span class="fc" id="L212">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L213">        message[1] = 1877;</span>
+
+<span class="fc bfc" id="L215" title="All 2 branches covered.">        if(rc.canSubmitTransaction(message, 2))</span>
+<span class="fc" id="L216">            rc.submitTransaction(message, 2);</span>
+<span class="fc" id="L217">    }</span>
+
+    //Checks the blockchain for messages with the fulfillment center int (77)
+    public boolean fulfillmentCenterExists() throws GameActionException {
+<span class="fc bfc" id="L221" title="All 2 branches covered.">        for (int i = 1; i &lt; rc.getRoundNum(); i++){</span>
+<span class="fc" id="L222">            Transaction[] txs = rc.getBlock(i);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            if(txs != null) {</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">                for (Transaction t : txs) {</span>
+<span class="fc" id="L225">                    int[] message = t.getMessage();</span>
+<span class="fc bfc" id="L226" title="All 4 branches covered.">                    if (message[0] == secretTeamKey &amp;&amp; message[1] == 77) return true;</span>
+                }
+            }
+        }
+<span class="fc" id="L230">        return false;</span>
+    }
+
+    //Fulfillment center creation ID is 77 on the blockchain
+    //index 2, 3 is the x,y of the fulfillment center
+    public void broadcastFulfillmentCenterExists() throws GameActionException {
+<span class="fc" id="L236">        int[] message = new int[7];</span>
+<span class="fc" id="L237">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L238">        message[1] = 77;</span>
+<span class="fc" id="L239">        message[2] = rc.getLocation().x;</span>
+<span class="fc" id="L240">        message[3] = rc.getLocation().y;</span>
+<span class="fc" id="L241">        rc.submitTransaction(message, 2);</span>
+<span class="fc" id="L242">    }</span>
+
+    public void broadcastDeliveryDrone() throws GameActionException{
+<span class="fc" id="L245">        int [] message = new int[7];</span>
+<span class="fc" id="L246">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L247">        message[1] = 88;</span>
+<span class="fc" id="L248">        rc.submitTransaction(message, 2);</span>
+<span class="fc" id="L249">    }</span>
+
+    public int deliveryDroneCount() throws GameActionException {
+<span class="fc" id="L252">        int droneCount = 0;</span>
+
+<span class="fc bfc" id="L254" title="All 2 branches covered.">        for (int i = 1; i &lt; rc.getRoundNum(); i++){</span>
+<span class="fc" id="L255">            Transaction[] txs = rc.getBlock(i);</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">            if(txs != null) {</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">                for (Transaction t : txs) {</span>
+<span class="fc" id="L258">                    int[] message = t.getMessage();</span>
+<span class="fc bfc" id="L259" title="All 4 branches covered.">                    if (message[0] == secretTeamKey &amp;&amp; message[1] == 88) droneCount += 1;</span>
+                }
+            }
+        }
+
+<span class="fc" id="L264">        return droneCount;</span>
+    }
+    public void broadcastLandscaperExists() throws GameActionException{
+<span class="fc" id="L267">        int [] message = new int[7];</span>
+<span class="fc" id="L268">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L269">        message[1] = 199;</span>
+<span class="fc" id="L270">        rc.submitTransaction(message, 2);</span>
+<span class="fc" id="L271">    }</span>
+
+    public boolean landscaperExists() throws GameActionException {
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        for (int i = 1; i &lt; rc.getRoundNum(); i++){</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">            for(Transaction t : rc.getBlock(i)){</span>
+<span class="fc" id="L276">                int[] message = t.getMessage();</span>
+<span class="fc bfc" id="L277" title="All 4 branches covered.">                if(message[0] == secretTeamKey &amp;&amp; message[1] == 199)</span>
+<span class="fc" id="L278">                    return true;</span>
+            }
+        }
+
+<span class="fc" id="L282">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

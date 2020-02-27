@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CommunicationsTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bckl_battlecode20$Sprint3UnitTesting.exec</a> &gt; <a href="index.source.html" class="el_package">SmackDat2</a> &gt; <span class="el_source">CommunicationsTest.java</span></div><h1>CommunicationsTest.java</h1><pre class="source lang-java linenums">package SmackDat2;
+
+import battlecode.common.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import static SmackDat2.Communications.secretTeamKey;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+<span class="fc" id="L11">public class CommunicationsTest {</span>
+
+    private Communications comms;
+    private RobotController rc;
+
+    @Before
+    public void setUp() throws Exception {
+<span class="fc" id="L18">        rc = mock(RobotController.class);</span>
+<span class="fc" id="L19">        comms = new Communications(rc);</span>
+<span class="fc" id="L20">    }</span>
+
+    //can send
+    @Test
+    public void sendHqLoc1() throws GameActionException {
+<span class="fc" id="L25">        int[] message = new int[7];</span>
+<span class="fc" id="L26">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L27">        message[1] = 0; // 0 Designates to HQ Location</span>
+<span class="fc" id="L28">        message[2] = 1; // x coord of HQ</span>
+<span class="fc" id="L29">        message[3] = 1; // y coord of HQ</span>
+<span class="fc" id="L30">        when(rc.canSubmitTransaction(message,3)).thenReturn(true);</span>
+<span class="fc" id="L31">        comms.sendHqLoc(new MapLocation(1,1));</span>
+<span class="fc" id="L32">    }</span>
+
+    //can't send
+    @Test
+    public void sendHqLoc2() throws GameActionException {
+<span class="fc" id="L37">        int[] message = new int[7];</span>
+<span class="fc" id="L38">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L39">        message[1] = 0; // 0 Designates to HQ Location</span>
+<span class="fc" id="L40">        message[2] = 1; // x coord of HQ</span>
+<span class="fc" id="L41">        message[3] = 1; // y coord of HQ</span>
+<span class="fc" id="L42">        when(rc.canSubmitTransaction(message,3)).thenReturn(false);</span>
+<span class="fc" id="L43">        comms.sendHqLoc(new MapLocation(1,1));</span>
+<span class="fc" id="L44">    }</span>
+    /*
+    public MapLocation getHqLocFromBlockchain() throws GameActionException {
+        for (int i = 1; i &lt; rc.getRoundNum(); i++){
+            for(Transaction tx : rc.getBlock(i)) {
+                int[] mess = tx.getMessage();
+                if(mess[0] == secretTeamKey &amp;&amp; mess[1] == 0){
+                    System.out.println(&quot;found the HQ!&quot;);
+                    return new MapLocation(mess[2], mess[3]);
+                }
+            }
+        }
+        return new MapLocation(1,1);
+    }*/
+
+    @Test
+    public void getHqLocFromBlockchain1() throws GameActionException {
+<span class="fc" id="L61">        when(rc.getRoundNum()).thenReturn(1);</span>
+<span class="fc" id="L62">        assertEquals(comms.getHqLocFromBlockchain(), new MapLocation(1,1));</span>
+<span class="fc" id="L63">    }</span>
+/*
+    @Test
+    public void getHqLocFromBlockchain2() throws GameActionException {
+        int[] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 0; // 0 Designates to HQ Location
+        message[2] = 1; // x coord of HQ
+        message[3] = 1; // y coord of HQ
+        Transaction tx = new Transaction(5,message,1);
+        Transaction[] txs = new Transaction[]{tx};
+        when(rc.getRoundNum()).thenReturn(2);
+        when(rc.getBlock(any())).thenReturn(txs);
+        assertNotEquals(comms.getHqLocFromBlockchain(), new MapLocation(1,1));
+    }
+*/
+    //can broadcast
+    @Test
+    public void broadcastDesignSchoolCreation1() throws GameActionException {
+<span class="fc" id="L82">        int[] message = new int[7];</span>
+<span class="fc" id="L83">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L84">        message[1] = 1;</span>
+<span class="fc" id="L85">        message[2] = 0; // x coord of HQ</span>
+<span class="fc" id="L86">        message[3] = 1; // y coord of HQ</span>
+<span class="fc" id="L87">        when(rc.canSubmitTransaction(message, 3)).thenReturn(true);</span>
+<span class="fc" id="L88">        comms.broadcastDesignSchoolCreation(new MapLocation(0,1));</span>
+<span class="fc" id="L89">    }</span>
+
+    //can't broadcast
+    @Test
+    public void broadcastDesignSchoolCreation2() throws GameActionException {
+<span class="fc" id="L94">        int[] message = new int[7];</span>
+<span class="fc" id="L95">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L96">        message[1] = 1;</span>
+<span class="fc" id="L97">        message[2] = 0; // x coord of HQ</span>
+<span class="fc" id="L98">        message[3] = 1; // y coord of HQ</span>
+<span class="fc" id="L99">        when(rc.canSubmitTransaction(message, 3)).thenReturn(false);</span>
+<span class="fc" id="L100">        comms.broadcastDesignSchoolCreation(new MapLocation(0,1));</span>
+<span class="fc" id="L101">    }</span>
+
+    //can broadcast
+    @Test
+    public void broadcastDesignSchoolExists1() throws GameActionException {
+<span class="fc" id="L106">        int[] message = new int[7];</span>
+<span class="fc" id="L107">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L108">        message[1] = 1877;</span>
+
+<span class="fc" id="L110">        when(rc.canSubmitTransaction(message, 2)).thenReturn(true);</span>
+<span class="fc" id="L111">        comms.broadcastDesignSchoolExists();</span>
+<span class="fc" id="L112">    }</span>
+
+    //can't broadcast
+    @Test
+    public void broadcastDesignSchoolExists2() throws GameActionException {
+<span class="fc" id="L117">        int[] message = new int[7];</span>
+<span class="fc" id="L118">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L119">        message[1] = 1877;</span>
+
+<span class="fc" id="L121">        when(rc.canSubmitTransaction(message, 2)).thenReturn(false);</span>
+<span class="fc" id="L122">        comms.broadcastDesignSchoolExists();</span>
+<span class="fc" id="L123">    }</span>
+    //can broadcast
+    @Test
+    public void broadcastSoupLocation1() throws GameActionException {
+<span class="fc" id="L127">        int[] message = new int[7];</span>
+<span class="fc" id="L128">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L129">        message[1] = 2;</span>
+<span class="fc" id="L130">        message[2] = 1; // x coord of HQ</span>
+<span class="fc" id="L131">        message[3] = 1; // y coord of HQ</span>
+<span class="fc" id="L132">        when(rc.canSubmitTransaction(message, 3)).thenReturn(true);</span>
+<span class="fc" id="L133">        comms.broadcastSoupLocation(new MapLocation(1,1));</span>
+<span class="fc" id="L134">    }</span>
+
+    //can't broadcast
+    @Test
+    public void broadcastSoupLocation2() throws GameActionException {
+<span class="fc" id="L139">        int[] message = new int[7];</span>
+<span class="fc" id="L140">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L141">        message[1] = 2;</span>
+<span class="fc" id="L142">        message[2] = 1; // x coord of HQ</span>
+<span class="fc" id="L143">        message[3] = 1; // y coord of HQ</span>
+<span class="fc" id="L144">        when(rc.canSubmitTransaction(message, 3)).thenReturn(false);</span>
+<span class="fc" id="L145">        comms.broadcastSoupLocation(new MapLocation(1,1));</span>
+<span class="fc" id="L146">    }</span>
+
+    @Test
+    public void updateSoupLocations() {
+<span class="fc" id="L150">    }</span>
+
+    //can send
+    @Test
+    public void sendRefineryLocation1() throws GameActionException {
+<span class="fc" id="L155">        int[] message = new int[7];</span>
+<span class="fc" id="L156">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L157">        message[1] = 2; //0 Designates it is Refinery Location</span>
+<span class="fc" id="L158">        message[2] = 1;</span>
+<span class="fc" id="L159">        message[3] = 1;</span>
+
+<span class="fc" id="L161">        when(rc.canSubmitTransaction(message, 2)).thenReturn(true);</span>
+<span class="fc" id="L162">        comms.sendRefineryLocation(new MapLocation(1,1));</span>
+<span class="fc" id="L163">    }</span>
+
+    //can't send
+    @Test
+    public void sendRefineryLocation2() throws GameActionException {
+<span class="fc" id="L168">        int[] message = new int[7];</span>
+<span class="fc" id="L169">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L170">        message[1] = 2; //0 Designates it is Refinery Location</span>
+<span class="fc" id="L171">        message[2] = 1;</span>
+<span class="fc" id="L172">        message[3] = 1;</span>
+
+<span class="fc" id="L174">        when(rc.canSubmitTransaction(message, 2)).thenReturn(false);</span>
+<span class="fc" id="L175">        comms.sendRefineryLocation(new MapLocation(1,1));</span>
+<span class="fc" id="L176">    }</span>
+
+    @Test
+    public void getRefineryLocations() {
+<span class="fc" id="L180">    }</span>
+
+    //can broadcast
+    @Test
+    public void broadcastVaporatorExists1() throws GameActionException {
+<span class="fc" id="L185">        int[] message = new int[7];</span>
+<span class="fc" id="L186">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L187">        message[1] = 9645;</span>
+<span class="fc" id="L188">        when(rc.canSubmitTransaction(message, 2)).thenReturn(true);</span>
+<span class="fc" id="L189">        comms.broadcastVaporatorExists();</span>
+<span class="fc" id="L190">    }</span>
+
+    //can't broadcast
+    @Test
+    public void broadcastVaporatorExists2() throws GameActionException {
+<span class="fc" id="L195">        int[] message = new int[7];</span>
+<span class="fc" id="L196">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L197">        message[1] = 9645;</span>
+<span class="fc" id="L198">        when(rc.canSubmitTransaction(message, 2)).thenReturn(false);</span>
+<span class="fc" id="L199">        comms.broadcastVaporatorExists();</span>
+<span class="fc" id="L200">    }</span>
+
+    //can broadcast
+    @Test
+    public void broadcastNetgunMade1() throws GameActionException {
+<span class="fc" id="L205">        int[] message = new int[7];</span>
+<span class="fc" id="L206">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L207">        message[1] = 645;</span>
+<span class="fc" id="L208">        when(rc.canSubmitTransaction(message, 2)).thenReturn(true);</span>
+<span class="fc" id="L209">        comms.broadcastNetgunMade();</span>
+<span class="fc" id="L210">    }</span>
+
+    //can't broadcast
+    @Test
+    public void broadcastNetgunMade2() throws GameActionException {
+<span class="fc" id="L215">        int[] message = new int[7];</span>
+<span class="fc" id="L216">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L217">        message[1] = 645;</span>
+<span class="fc" id="L218">        when(rc.canSubmitTransaction(message, 2)).thenReturn(false);</span>
+<span class="fc" id="L219">        comms.broadcastNetgunMade();</span>
+<span class="fc" id="L220">    }</span>
+
+    @Test
+    public void broadcastFulfillmentCenterExists() throws GameActionException {
+<span class="fc" id="L224">        int[] message = new int[7];</span>
+<span class="fc" id="L225">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L226">        message[1] = 77;</span>
+<span class="fc" id="L227">        when(rc.getLocation()).thenReturn(new MapLocation(1,1));</span>
+<span class="fc" id="L228">        when(rc.getLocation()).thenReturn(new MapLocation(1,1));</span>
+<span class="fc" id="L229">        doNothing().when(rc).submitTransaction(message, 2);</span>
+<span class="fc" id="L230">        comms.broadcastFulfillmentCenterExists();</span>
+<span class="fc" id="L231">    }</span>
+
+    @Test
+    public void broadcastDeliveryDrone() throws GameActionException{
+<span class="fc" id="L235">        int [] message = new int[7];</span>
+<span class="fc" id="L236">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L237">        message[1] = 88;</span>
+<span class="fc" id="L238">        doNothing().when(rc).submitTransaction(message, 2);</span>
+<span class="fc" id="L239">        comms.broadcastDeliveryDrone();</span>
+<span class="fc" id="L240">    }</span>
+
+    @Test
+    public void broadcastLandscaperExists() throws GameActionException{
+<span class="fc" id="L244">        int [] message = new int[7];</span>
+<span class="fc" id="L245">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L246">        message[1] = 199;</span>
+<span class="fc" id="L247">        doNothing().when(rc).submitTransaction(message, 2);</span>
+<span class="fc" id="L248">        comms.broadcastLandscaperExists();</span>
+<span class="fc" id="L249">    }</span>
+
+    //don't go in for loop at all
+    @Test
+    public void landscaperExistsFalse1() throws GameActionException {
+<span class="fc" id="L254">        when(rc.getRoundNum()).thenReturn(1);</span>
+<span class="fc" id="L255">        comms.landscaperExists();</span>
+<span class="fc" id="L256">    }</span>
+
+    @Test
+    public void landscaperExistsTrue() throws GameActionException {
+<span class="fc" id="L260">        int[] message = new int[7];</span>
+<span class="fc" id="L261">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L262">        message[1] = 199;</span>
+<span class="fc" id="L263">        message[2] = 1;</span>
+<span class="fc" id="L264">        message[3] = 1;</span>
+<span class="fc" id="L265">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L266">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L267">        when(rc.getRoundNum()).thenReturn(2);</span>
+<span class="fc" id="L268">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L269">        assertEquals(true, comms.landscaperExists());</span>
+<span class="fc" id="L270">    }</span>
+
+    //go in for loop but drop out
+    @Test
+    public void landscaperExistsFalse2() throws GameActionException {
+<span class="fc" id="L275">        int[] message = new int[7];</span>
+<span class="fc" id="L276">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L277">        message[1] = 2;</span>
+<span class="fc" id="L278">        message[2] = 1;</span>
+<span class="fc" id="L279">        message[3] = 1;</span>
+<span class="fc" id="L280">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L281">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L282">        when(rc.getRoundNum()).thenReturn(2);</span>
+<span class="fc" id="L283">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L284">        assertEquals(false, comms.landscaperExists());</span>
+<span class="fc" id="L285">    }</span>
+
+    //found other team's transaction block
+    @Test
+    public void landscaperExistsFalse3() throws GameActionException {
+<span class="fc" id="L290">        int[] message = new int[7];</span>
+<span class="fc" id="L291">        message[0] = 0;</span>
+<span class="fc" id="L292">        message[1] = 199;</span>
+<span class="fc" id="L293">        message[2] = 1;</span>
+<span class="fc" id="L294">        message[3] = 1;</span>
+<span class="fc" id="L295">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L296">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L297">        when(rc.getRoundNum()).thenReturn(2);</span>
+<span class="fc" id="L298">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L299">        assertEquals(false, comms.landscaperExists());</span>
+<span class="fc" id="L300">    }</span>
+
+    //increment drone count
+    @Test
+    public void deliveryDroneCount1() throws GameActionException {
+<span class="fc" id="L305">        int[] message = new int[7];</span>
+<span class="fc" id="L306">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L307">        message[1] = 88;</span>
+<span class="fc" id="L308">        message[2] = 1;</span>
+<span class="fc" id="L309">        message[3] = 1;</span>
+<span class="fc" id="L310">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L311">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L312">        when(rc.getRoundNum()).thenReturn(3);</span>
+<span class="fc" id="L313">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L314">        assertEquals(1, comms.deliveryDroneCount());</span>
+<span class="fc" id="L315">    }</span>
+
+    //don't increment drone count
+    @Test
+    public void deliveryDroneCount0() throws GameActionException {
+<span class="fc" id="L320">        int[] message = new int[7];</span>
+<span class="fc" id="L321">        message[0] = 0;</span>
+<span class="fc" id="L322">        message[1] = 88;</span>
+<span class="fc" id="L323">        message[2] = 1;</span>
+<span class="fc" id="L324">        message[3] = 1;</span>
+<span class="fc" id="L325">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L326">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L327">        when(rc.getRoundNum()).thenReturn(3);</span>
+<span class="fc" id="L328">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L329">        assertEquals(0, comms.deliveryDroneCount());</span>
+<span class="fc" id="L330">    }</span>
+
+    //don't increment drone count
+    @Test
+    public void deliveryDroneCount0_diffMsg() throws GameActionException {
+<span class="fc" id="L335">        int[] message = new int[7];</span>
+<span class="fc" id="L336">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L337">        message[1] = 89;</span>
+<span class="fc" id="L338">        message[2] = 1;</span>
+<span class="fc" id="L339">        message[3] = 1;</span>
+<span class="fc" id="L340">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L341">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L342">        when(rc.getRoundNum()).thenReturn(3);</span>
+<span class="fc" id="L343">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L344">        assertEquals(0, comms.deliveryDroneCount());</span>
+<span class="fc" id="L345">    }</span>
+
+    @Test
+    public void fulfillmentCenterExistsTrue() throws GameActionException {
+<span class="fc" id="L349">        int[] message = new int[7];</span>
+<span class="fc" id="L350">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L351">        message[1] = 77;</span>
+<span class="fc" id="L352">        message[2] = 1;</span>
+<span class="fc" id="L353">        message[3] = 1;</span>
+<span class="fc" id="L354">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L355">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L356">        when(rc.getRoundNum()).thenReturn(3);</span>
+<span class="fc" id="L357">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L358">        assertEquals(true, comms.fulfillmentCenterExists());</span>
+<span class="fc" id="L359">    }</span>
+
+
+    @Test
+    public void fulfillmentCenterExistsFalse1() throws GameActionException {
+<span class="fc" id="L364">        int[] message = new int[7];</span>
+<span class="fc" id="L365">        message[0] = 0;</span>
+<span class="fc" id="L366">        message[1] = 77;</span>
+<span class="fc" id="L367">        message[2] = 1;</span>
+<span class="fc" id="L368">        message[3] = 1;</span>
+<span class="fc" id="L369">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L370">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L371">        when(rc.getRoundNum()).thenReturn(3);</span>
+<span class="fc" id="L372">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L373">        assertEquals(false, comms.fulfillmentCenterExists());</span>
+<span class="fc" id="L374">    }</span>
+
+    @Test
+    public void fulfillmentCenterExistsFalse2() throws GameActionException {
+<span class="fc" id="L378">        int[] message = new int[7];</span>
+<span class="fc" id="L379">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L380">        message[1] = 78;</span>
+<span class="fc" id="L381">        message[2] = 1;</span>
+<span class="fc" id="L382">        message[3] = 1;</span>
+<span class="fc" id="L383">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L384">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L385">        when(rc.getRoundNum()).thenReturn(3);</span>
+<span class="fc" id="L386">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L387">        assertEquals(false, comms.fulfillmentCenterExists());</span>
+<span class="fc" id="L388">    }</span>
+
+    @Test
+    public void designSchoolExistsTrue() throws GameActionException {
+<span class="fc" id="L392">        int[] message = new int[7];</span>
+<span class="fc" id="L393">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L394">        message[1] = 1877;</span>
+<span class="fc" id="L395">        message[2] = 1;</span>
+<span class="fc" id="L396">        message[3] = 1;</span>
+<span class="fc" id="L397">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L398">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L399">        when(rc.getRoundNum()).thenReturn(3);</span>
+<span class="fc" id="L400">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L401">        assertEquals(true,comms.designSchoolExists());</span>
+<span class="fc" id="L402">    }</span>
+
+    @Test
+    public void designSchoolExistsFalse1() throws GameActionException {
+<span class="fc" id="L406">        int[] message = new int[7];</span>
+<span class="fc" id="L407">        message[0] = secretTeamKey;</span>
+<span class="fc" id="L408">        message[1] = 187;</span>
+<span class="fc" id="L409">        message[2] = 1;</span>
+<span class="fc" id="L410">        message[3] = 1;</span>
+<span class="fc" id="L411">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L412">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L413">        when(rc.getRoundNum()).thenReturn(3);</span>
+<span class="fc" id="L414">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L415">        assertEquals(false,comms.designSchoolExists());</span>
+<span class="fc" id="L416">    }</span>
+
+    @Test
+    public void designSchoolExistsFalse2() throws GameActionException {
+<span class="fc" id="L420">        int[] message = new int[7];</span>
+<span class="fc" id="L421">        message[0] = secretTeamKey+1;</span>
+<span class="fc" id="L422">        message[1] = 1877;</span>
+<span class="fc" id="L423">        message[2] = 1;</span>
+<span class="fc" id="L424">        message[3] = 1;</span>
+<span class="fc" id="L425">        Transaction tx = new Transaction(1,message,2);</span>
+<span class="fc" id="L426">        Transaction[] txs = {tx};</span>
+<span class="fc" id="L427">        when(rc.getRoundNum()).thenReturn(3);</span>
+<span class="fc" id="L428">        when(rc.getBlock(1)).thenReturn(txs);</span>
+<span class="fc" id="L429">        assertEquals(false,comms.designSchoolExists());</span>
+<span class="fc" id="L430">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -33,11 +33,13 @@ public class Miner extends Unit {
         Team myTeamColor = rc.getTeam();
 
         RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
-        for (RobotInfo r : nearbyRobots) {
-            // TEST: System.out.println("Robot nearby");
-            if (r.team != myTeamColor && rc.canShootUnit(r.ID))
-                rc.shootUnit(r.ID);
+        if(nearbyRobots != null) {
+            for (RobotInfo r : nearbyRobots) {
+                // TEST: System.out.println("Robot nearby");
+                if (r.team != myTeamColor && rc.canShootUnit(r.ID))
+                    rc.shootUnit(r.ID);
 
+            }
         }
 
         for (Direction dir : Util.directions)

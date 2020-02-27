@@ -10,19 +10,23 @@ import static org.mockito.Mockito.*;
 public class VaporatorTest {
     private Vaporator vap;
     private RobotController rc;
-    private Communications coms;
 
     @Before
     public void setUp() throws Exception {
         rc = mock(RobotController.class);
         vap = new Vaporator(rc);
-        coms = mock(Communications.class);
+        vap.comms = mock(Communications.class);
     }
 
     @Test
-    public void takeTurn() throws GameActionException{
-        when(coms.vaporatorExists()).thenReturn(true);
+    public void takeTurnTrue() throws GameActionException{
+        when(vap.comms.vaporatorExists()).thenReturn(true);
         vap.takeTurn();
     }
 
+    @Test
+    public void takeTurnFalse() throws GameActionException{
+        when(vap.comms.vaporatorExists()).thenReturn(false);
+        vap.takeTurn();
+    }
 }

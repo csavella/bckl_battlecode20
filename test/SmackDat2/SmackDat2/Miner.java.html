@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Miner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bckl_battlecode20$Sprint3UnitTesting.exec</a> &gt; <a href="index.source.html" class="el_package">SmackDat2</a> &gt; <span class="el_source">Miner.java</span></div><h1>Miner.java</h1><pre class="source lang-java linenums">package SmackDat2;
+
+import battlecode.common.*;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import static SmackDat2.Util.*;
+
+public class Miner extends Unit {
+
+<span class="fc" id="L12">    int numDesignSchools = 0;</span>
+<span class="fc" id="L13">    int numberOfFulfillmentCenters=0;</span>
+<span class="fc" id="L14">    int numberOfRefineries=0;</span>
+
+<span class="fc" id="L16">    ArrayList&lt;MapLocation&gt; soupLocations = new ArrayList&lt;MapLocation&gt;();</span>
+
+    public Miner(RobotController r) {
+<span class="fc" id="L19">        super(r);</span>
+<span class="fc" id="L20">    }</span>
+
+    public void takeTurn() throws GameActionException {
+<span class="fc" id="L23">        int switchMoveLogicTurnCount = 10;</span>
+<span class="fc" id="L24">        super.takeTurn();</span>
+
+<span class="fc" id="L26">        numDesignSchools += comms.getNewDesignSchoolCount();</span>
+        //numberOfFulfillmentCenters += comms.getNewBuildingCount();
+
+<span class="fc" id="L29">        comms.updateSoupLocations(soupLocations);</span>
+<span class="fc" id="L30">        checkIfSoupGone();</span>
+
+        //Code for miners to shoot enemy drones
+<span class="fc" id="L33">        Team myTeamColor = rc.getTeam();</span>
+
+<span class="fc" id="L35">        RobotInfo[] nearbyRobots = rc.senseNearbyRobots();</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if(nearbyRobots != null) {</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">            for (RobotInfo r : nearbyRobots) {</span>
+                // TEST: System.out.println(&quot;Robot nearby&quot;);
+<span class="nc bnc" id="L39" title="All 4 branches missed.">                if (r.team != myTeamColor &amp;&amp; rc.canShootUnit(r.ID))</span>
+<span class="nc" id="L40">                    rc.shootUnit(r.ID);</span>
+
+            }
+        }
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for (Direction dir : Util.directions)</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">            if (tryMine(dir)) {</span>
+<span class="nc" id="L47">                System.out.println(&quot;I mined soup! &quot; + rc.getSoupCarrying());</span>
+<span class="nc" id="L48">                MapLocation soupLoc = rc.getLocation().add(dir);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">                if (!soupLocations.contains(soupLoc)) {</span>
+<span class="nc" id="L50">                    comms.broadcastSoupLocation(soupLoc);</span>
+                }
+            }
+        // mine first, then when full, deposit
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        for (Direction dir : Util.directions)</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">            if (tryRefine(dir))</span>
+<span class="nc" id="L56">                System.out.println(&quot;I refined soup! &quot; + rc.getTeamSoup());</span>
+
+<span class="fc" id="L58">        findHQ();</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (!rc.getLocation().isWithinDistanceSquared(hqLoc,9)) {</span>
+            /*
+            if (numDesignSchools &lt; 1) {
+                if (tryBuild(RobotType.DESIGN_SCHOOL, Util.randomDirection()))
+                    System.out.println(&quot;created a design school&quot;);
+            }
+            */
+
+<span class="nc bnc" id="L67" title="All 2 branches missed.">            if(!comms.designSchoolExists()){</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                for (Direction dir : directions) {</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">                    if (tryBuild(RobotType.DESIGN_SCHOOL, dir)) {</span>
+<span class="nc" id="L70">                        break;</span>
+                    }
+                }
+
+            }
+
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            if (!comms.fulfillmentCenterExists()) {</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">                for (Direction dir : directions) {</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">                    if (tryBuild(RobotType.FULFILLMENT_CENTER, dir)) {</span>
+<span class="nc" id="L79">                        System.out.println(&quot;Fulfillment center created!&quot;);</span>
+                    }
+                }
+            }
+
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (numberOfRefineries &lt; 1) {</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">                if (tryBuild(RobotType.REFINERY, Util.randomDirection())) {</span>
+<span class="nc" id="L86">                    System.out.println(&quot;created a refinery&quot;);</span>
+<span class="nc" id="L87">                    numberOfRefineries++;</span>
+                }
+            }
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            if(!comms.vaporatorExists())</span>
+<span class="nc" id="L92">                tryBuild(RobotType.VAPORATOR, Util.randomDirection());</span>
+        }
+
+<span class="pc bpc" id="L95" title="5 of 6 branches missed.">        if (rc.getRoundNum() &gt; 300 &amp;&amp; rc.getTeamSoup() &gt; 255 &amp;&amp; !comms.netGunHasBeenMade()) {</span>
+<span class="nc" id="L96">            comms.broadcastNetgunMade();</span>
+<span class="nc" id="L97">            rc.buildRobot(RobotType.NET_GUN, Direction.CENTER);</span>
+        }
+
+<span class="fc" id="L100">        findSoup(switchMoveLogicTurnCount);</span>
+<span class="fc" id="L101">    }</span>
+
+
+
+    /* sense soup and move towards it. If already carrying a bunch of soup, bring it back to the HQ.
+           on every 40th turn, move in a general direction. Goal is for miners to spread out to find
+           soup on map
+    */
+    void findSoup(int switchMoveLogicTurnCount) throws GameActionException {
+<span class="fc" id="L110">        int mapX = rc.getMapWidth();</span>
+<span class="fc" id="L111">        int mapY = rc.getMapHeight();</span>
+<span class="fc" id="L112">        int hqX = hqLoc.x;</span>
+<span class="fc" id="L113">        int hqY = hqLoc.y;</span>
+<span class="fc" id="L114">        int mapCoordinates = 0;</span>
+        int randomNum;
+        Direction[] directionList;
+        Direction minerDirection;
+        Direction backtoHQ;
+        Random random;
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (turnCount % switchMoveLogicTurnCount != 0) {</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            if (rc.getSoupCarrying() == RobotType.MINER.soupLimit) {</span>
+<span class="fc" id="L123">                backtoHQ = rc.getLocation().directionTo(hqLoc);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">                if (nav.goTo(backtoHQ))</span>
+<span class="fc" id="L125">                    System.out.println(&quot;going back to HQ&quot;);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">            } else if (soupLocations.size() &gt; 0) {</span>
+<span class="fc" id="L127">                nav.goTo(soupLocations.get(0));</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">            } else if (nav.goTo(Util.randomDirection())) {</span>
+<span class="fc" id="L129">                System.out.println(&quot;I moved randomly!&quot;);</span>
+            }
+        }
+        else {
+<span class="fc bfc" id="L133" title="All 4 branches covered.">            if (hqX &lt; mapX / 3 &amp;&amp; hqY &lt; mapY / 3 ) {</span>
+<span class="fc" id="L134">                mapCoordinates = 1;</span>
+<span class="fc" id="L135">                directionList = directions1;</span>
+<span class="pc bpc" id="L136" title="1 of 4 branches missed.">            } else if (hqX &lt; mapX / 3 &amp;&amp; hqY &gt; mapY * 2 / 3 ) {</span>
+<span class="fc" id="L137">                mapCoordinates = 2;</span>
+<span class="fc" id="L138">                directionList = directions2;</span>
+<span class="fc bfc" id="L139" title="All 4 branches covered.">            } else if (hqX &gt; mapX * 2 / 3 &amp;&amp; hqY &gt; mapY * 2 / 3 ) {</span>
+<span class="fc" id="L140">                mapCoordinates = 3;</span>
+<span class="fc" id="L141">                directionList = directions3;</span>
+<span class="pc bpc" id="L142" title="1 of 4 branches missed.">            } else if (hqX &gt; mapX * 2 / 3 &amp;&amp; hqY &lt; mapY / 3 ) {</span>
+<span class="fc" id="L143">                mapCoordinates = 4;</span>
+<span class="fc" id="L144">                directionList = directions4;</span>
+            } else {
+<span class="fc" id="L146">                directionList = directions;</span>
+            }
+
+<span class="fc" id="L149">            random = new Random();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">            if (mapCoordinates == 0) {</span>
+<span class="fc" id="L151">                randomNum = random.nextInt(8);</span>
+            } else {
+<span class="fc" id="L153">                randomNum = random.nextInt(3);</span>
+            }
+
+<span class="fc" id="L156">            minerDirection = directionList[randomNum];</span>
+<span class="fc" id="L157">            System.out.println(&quot;moving &quot; + minerDirection);</span>
+<span class="fc" id="L158">            nav.goTo(minerDirection);</span>
+        }
+<span class="fc" id="L160">    }</span>
+
+    /**
+     * Attempts to mine soup in a given direction.
+     *
+     * @param dir The intended direction of mining
+     * @return true if a move was performed
+     * @throws GameActionException
+     */
+    boolean tryMine(Direction dir) throws GameActionException {
+<span class="pc bpc" id="L170" title="1 of 4 branches missed.">        if (rc.isReady() &amp;&amp; rc.canMineSoup(dir)) {</span>
+<span class="fc" id="L171">            rc.mineSoup(dir);</span>
+<span class="fc" id="L172">            return true;</span>
+<span class="fc" id="L173">        } else return false;</span>
+    }
+
+    /**
+     * Attempts to refine soup in a given direction.
+     *
+     * @param dir The intended direction of refining
+     * @return true if a move was performed
+     * @throws GameActionException
+     */
+    boolean tryRefine(Direction dir) throws GameActionException {
+<span class="pc bpc" id="L184" title="1 of 4 branches missed.">        if (rc.isReady() &amp;&amp; rc.canDepositSoup(dir)) {</span>
+<span class="fc" id="L185">            rc.depositSoup(dir, rc.getSoupCarrying());</span>
+<span class="fc" id="L186">            return true;</span>
+<span class="fc" id="L187">        } else return false;</span>
+    }
+
+    void checkIfSoupGone() throws GameActionException {
+<span class="fc bfc" id="L191" title="All 2 branches covered.">        if (soupLocations.size() &gt; 0) {</span>
+<span class="fc" id="L192">            MapLocation targetSoupLoc = soupLocations.get(0);</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">            if (rc.canSenseLocation(targetSoupLoc)</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">                    &amp;&amp; rc.senseSoup(targetSoupLoc) == 0) {</span>
+<span class="fc" id="L195">                soupLocations.remove(0);</span>
+            }
+        }
+<span class="fc" id="L198">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
