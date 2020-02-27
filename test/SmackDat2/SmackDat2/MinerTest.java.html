@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinerTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bckl_battlecode20$Sprint3UnitTesting.exec</a> &gt; <a href="index.source.html" class="el_package">SmackDat2</a> &gt; <span class="el_source">MinerTest.java</span></div><h1>MinerTest.java</h1><pre class="source lang-java linenums">package SmackDat2;
+
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotController;
+import com.google.inject.matcher.Matchers;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Map;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+<span class="fc" id="L16">public class MinerTest {</span>
+
+    private Miner m;
+    private RobotController rc;
+
+    @Before
+    public void setUp() throws Exception {
+<span class="fc" id="L23">        rc = mock(RobotController.class);</span>
+<span class="fc" id="L24">        m = new Miner(rc);</span>
+<span class="fc" id="L25">        m.nav = mock(Navigation.class);</span>
+<span class="fc" id="L26">        m.comms = mock(Communications.class);</span>
+<span class="fc" id="L27">    }</span>
+
+    @Test
+    public void tryMineFalse() throws GameActionException {
+<span class="fc" id="L31">        when(rc.isReady()).thenReturn(false);</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        for (Direction dir : Util.directions)</span>
+<span class="fc" id="L33">            assertEquals(m.tryMine(dir), false);</span>
+<span class="fc" id="L34">    }</span>
+
+    @Test
+    public void tryMineTrue() throws GameActionException {
+<span class="fc" id="L38">        when(rc.isReady()).thenReturn(true);</span>
+<span class="fc" id="L39">        when(rc.canMineSoup(any())).thenReturn(true);</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        for (Direction dir : Util.directions)</span>
+<span class="fc" id="L41">            assertEquals(m.tryMine(dir), true);</span>
+<span class="fc" id="L42">    }</span>
+
+    @Test
+    public void tryRefineFalse() throws GameActionException{
+<span class="fc" id="L46">        when(rc.isReady()).thenReturn(false);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (Direction dir : Util.directions)</span>
+<span class="fc" id="L48">            assertEquals(m.tryRefine(dir), false);</span>
+<span class="fc" id="L49">    }</span>
+
+    @Test
+    public void tryRefineTrue() throws GameActionException {
+<span class="fc" id="L53">        when(rc.isReady()).thenReturn(true);</span>
+<span class="fc" id="L54">        when(rc.canDepositSoup(any())).thenReturn(true);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        for (Direction dir : Util.directions)</span>
+<span class="fc" id="L56">            assertEquals(m.tryRefine(dir), true);</span>
+<span class="fc" id="L57">    }</span>
+
+    @Test
+    public void checkIfSoupGoneEmpty() throws GameActionException{
+<span class="fc" id="L61">        m.checkIfSoupGone();</span>
+<span class="fc" id="L62">    }</span>
+
+    @Test
+    public void checkIfSoupGone() throws GameActionException{
+<span class="fc" id="L66">        MapLocation ml = new MapLocation(1,1);</span>
+<span class="fc" id="L67">        m.soupLocations.add(ml);</span>
+<span class="fc" id="L68">        when(rc.canSenseLocation(any())).thenReturn(true);</span>
+<span class="fc" id="L69">        when(rc.senseSoup(any())).thenReturn(0);</span>
+<span class="fc" id="L70">        m.checkIfSoupGone();</span>
+<span class="fc" id="L71">    }</span>
+
+    @Test
+    public void findSoup1() throws GameActionException {
+<span class="fc" id="L75">        m.hqLoc = new MapLocation(1,1);</span>
+<span class="fc" id="L76">        m.turnCount = 11;</span>
+<span class="fc" id="L77">        when(rc.getMapWidth()).thenReturn(10);</span>
+<span class="fc" id="L78">        when(rc.getMapHeight()).thenReturn(10);</span>
+<span class="fc" id="L79">        when(rc.getSoupCarrying()).thenReturn(100);</span>
+<span class="fc" id="L80">        when(rc.getLocation()).thenReturn(new MapLocation(2,2));</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        for (Direction dir : Util.directions) {</span>
+<span class="fc" id="L82">            when(m.nav.goTo(dir)).thenReturn(true);</span>
+        }
+<span class="fc" id="L84">        m.findSoup(10);</span>
+<span class="fc" id="L85">    }</span>
+
+    @Test
+    public void findSoup2() throws GameActionException {
+<span class="fc" id="L89">        m.hqLoc = new MapLocation(1,1);</span>
+<span class="fc" id="L90">        m.turnCount = 11;</span>
+<span class="fc" id="L91">        when(rc.getMapWidth()).thenReturn(10);</span>
+<span class="fc" id="L92">        when(rc.getMapHeight()).thenReturn(10);</span>
+<span class="fc" id="L93">        when(rc.getSoupCarrying()).thenReturn(100);</span>
+<span class="fc" id="L94">        when(rc.getLocation()).thenReturn(new MapLocation(2,2));</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        for (Direction dir : Util.directions) {</span>
+<span class="fc" id="L96">            when(m.nav.goTo(dir)).thenReturn(false);</span>
+        }
+<span class="fc" id="L98">        m.findSoup(10);</span>
+<span class="fc" id="L99">    }</span>
+
+    @Test
+    public void findSoup3() throws GameActionException {
+<span class="fc" id="L103">        MapLocation firstSoup = new MapLocation(3,3);</span>
+<span class="fc" id="L104">        m.hqLoc = new MapLocation(1,1);</span>
+<span class="fc" id="L105">        m.turnCount = 11;</span>
+<span class="fc" id="L106">        when(rc.getMapWidth()).thenReturn(10);</span>
+<span class="fc" id="L107">        when(rc.getMapHeight()).thenReturn(10);</span>
+<span class="fc" id="L108">        when(rc.getSoupCarrying()).thenReturn(99);</span>
+<span class="fc" id="L109">        m.soupLocations.add(firstSoup);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (Direction dir : Util.directions) {</span>
+<span class="fc" id="L111">            when(m.nav.goTo(dir)).thenReturn(false);</span>
+        }
+<span class="fc" id="L113">        m.findSoup(10);</span>
+<span class="fc" id="L114">    }</span>
+
+    @Test
+    public void findSoup4() throws GameActionException {
+<span class="fc" id="L118">        m.hqLoc = new MapLocation(1,1);</span>
+<span class="fc" id="L119">        m.turnCount = 11;</span>
+<span class="fc" id="L120">        when(rc.getMapWidth()).thenReturn(10);</span>
+<span class="fc" id="L121">        when(rc.getMapHeight()).thenReturn(10);</span>
+<span class="fc" id="L122">        when(rc.getSoupCarrying()).thenReturn(99);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        for (Direction dir : Util.directions) {</span>
+<span class="fc" id="L124">            when(m.nav.goTo(dir)).thenReturn(true);</span>
+        }
+<span class="fc" id="L126">        m.findSoup(10);</span>
+<span class="fc" id="L127">    }</span>
+
+    @Test
+    public void findSoup5() throws GameActionException {
+<span class="fc" id="L131">        m.hqLoc = new MapLocation(1,1);</span>
+<span class="fc" id="L132">        m.turnCount = 11;</span>
+<span class="fc" id="L133">        when(rc.getMapWidth()).thenReturn(10);</span>
+<span class="fc" id="L134">        when(rc.getMapHeight()).thenReturn(10);</span>
+<span class="fc" id="L135">        when(rc.getSoupCarrying()).thenReturn(99);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        for (Direction dir : Util.directions) {</span>
+<span class="fc" id="L137">            when(m.nav.goTo(dir)).thenReturn(false);</span>
+        }
+<span class="fc" id="L139">        m.findSoup(10);</span>
+<span class="fc" id="L140">    }</span>
+
+    @Test
+    public void findSoup6() throws GameActionException {
+<span class="fc" id="L144">        m.turnCount = 20;</span>
+<span class="fc" id="L145">        m.hqLoc = new MapLocation(1,1);</span>
+<span class="fc" id="L146">        when(rc.getMapWidth()).thenReturn(10);</span>
+<span class="fc" id="L147">        when(rc.getMapHeight()).thenReturn(10);</span>
+<span class="fc" id="L148">        m.findSoup(10);</span>
+<span class="fc" id="L149">    }</span>
+
+    @Test
+    public void findSoup7() throws GameActionException {
+<span class="fc" id="L153">        m.turnCount = 20;</span>
+<span class="fc" id="L154">        m.hqLoc = new MapLocation(1,8);</span>
+<span class="fc" id="L155">        when(rc.getMapWidth()).thenReturn(10);</span>
+<span class="fc" id="L156">        when(rc.getMapHeight()).thenReturn(10);</span>
+<span class="fc" id="L157">        m.findSoup(10);</span>
+<span class="fc" id="L158">    }</span>
+
+    @Test
+    public void findSoup8() throws GameActionException {
+<span class="fc" id="L162">        m.turnCount = 20;</span>
+<span class="fc" id="L163">        m.hqLoc = new MapLocation(8,8);</span>
+<span class="fc" id="L164">        when(rc.getMapWidth()).thenReturn(10);</span>
+<span class="fc" id="L165">        when(rc.getMapHeight()).thenReturn(10);</span>
+<span class="fc" id="L166">        m.findSoup(10);</span>
+<span class="fc" id="L167">    }</span>
+
+    @Test
+    public void findSoup9() throws GameActionException {
+<span class="fc" id="L171">        m.turnCount = 20;</span>
+<span class="fc" id="L172">        m.hqLoc = new MapLocation(8,2);</span>
+<span class="fc" id="L173">        when(rc.getMapWidth()).thenReturn(10);</span>
+<span class="fc" id="L174">        when(rc.getMapHeight()).thenReturn(10);</span>
+<span class="fc" id="L175">        m.findSoup(10);</span>
+<span class="fc" id="L176">    }</span>
+
+    @Test
+    public void findSoup10() throws GameActionException {
+<span class="fc" id="L180">        m.turnCount = 20;</span>
+<span class="fc" id="L181">        m.hqLoc = new MapLocation(10,10);</span>
+<span class="fc" id="L182">        when(rc.getMapWidth()).thenReturn(30);</span>
+<span class="fc" id="L183">        when(rc.getMapHeight()).thenReturn(30);</span>
+<span class="fc" id="L184">        m.findSoup(10);</span>
+<span class="fc" id="L185">    }</span>
+
+    //hqX &lt; mapX / 3 == true &amp;&amp; hqY &gt; mapY * 2 / 3 == false
+    @Test
+    public void findSoup11() throws GameActionException {
+<span class="fc" id="L190">        m.turnCount = 20;</span>
+<span class="fc" id="L191">        m.hqLoc = new MapLocation(9,21);</span>
+<span class="fc" id="L192">        when(rc.getMapWidth()).thenReturn(30);</span>
+<span class="fc" id="L193">        when(rc.getMapHeight()).thenReturn(30);</span>
+<span class="fc" id="L194">        m.findSoup(10);</span>
+<span class="fc" id="L195">    }</span>
+
+    @Test
+    public void takeTurn1() throws GameActionException {
+<span class="fc" id="L199">        m.hqLoc = new MapLocation(1,1);</span>
+<span class="fc" id="L200">        when(m.comms.getNewDesignSchoolCount()).thenReturn(1);</span>
+<span class="fc" id="L201">        when(rc.getLocation()).thenReturn(new MapLocation(2,2));</span>
+<span class="fc" id="L202">        m.takeTurn();</span>
+<span class="fc" id="L203">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

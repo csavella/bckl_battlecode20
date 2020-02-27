@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Util.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bckl_battlecode20$Sprint3UnitTesting.exec</a> &gt; <a href="index.source.html" class="el_package">SmackDat2</a> &gt; <span class="el_source">Util.java</span></div><h1>Util.java</h1><pre class="source lang-java linenums">package SmackDat2;
+
+import battlecode.common.Direction;
+
+// This is a file to accumulate all the random helper functions
+// which don't interact with the game, but are common enough to be used in multiple places.
+// For example, lots of logic involving MapLocations and Directions is common and ubiquitous.
+<span class="nc" id="L8">public class Util {</span>
+<span class="fc" id="L9">    static Direction[] directions = {</span>
+        Direction.NORTH,
+        Direction.NORTHEAST,
+        Direction.EAST,
+        Direction.SOUTHEAST,
+        Direction.SOUTH,
+        Direction.SOUTHWEST,
+        Direction.WEST,
+        Direction.NORTHWEST
+    };
+
+    /* these directions will be used to move the miners away from the HQ
+       in hopes to find soup in different areas of the map */
+<span class="fc" id="L22">    static Direction[] directions1 = {</span>
+            Direction.NORTH,
+            Direction.NORTHEAST,
+            Direction.EAST
+    };
+<span class="fc" id="L27">    static Direction[] directions2 = {</span>
+            Direction.EAST,
+            Direction.SOUTHEAST,
+            Direction.SOUTH
+    };
+<span class="fc" id="L32">    static Direction[] directions3 = {</span>
+            Direction.WEST,
+            Direction.SOUTHWEST,
+            Direction.SOUTH
+    };
+<span class="fc" id="L37">    static Direction[] directions4 = {</span>
+            Direction.WEST,
+            Direction.NORTHWEST,
+            Direction.NORTH
+    };
+
+    //static final int secretTeamKey = 729384;
+    /**
+     * Returns a random Direction.
+     *
+     * @return a random Direction
+     */
+    static Direction randomDirection() {
+<span class="fc" id="L50">        return directions[(int) (Math.random() * directions.length)];</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

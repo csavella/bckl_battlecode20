@@ -16,24 +16,98 @@ public class LandscaperTest {
     public void setUp() throws Exception {
         rc = mock(RobotController.class);
         landscaper = new Landscaper(rc);
+        landscaper.comms = mock(Communications.class);
     }
-
+/*
     @Test
     public void takeTurn() throws GameActionException {
-        RobotInfo[] ri = {mock(RobotInfo.class)};
+        MapLocation ml = new MapLocation(50,50);
+        RobotInfo[] ri = new RobotInfo[]{new RobotInfo(12, Team.A, RobotType.LANDSCAPER, 0, false, 0, 200, 0, ml)};
+        when(rc.isReady()).thenReturn(true);
         when(rc.senseNearbyRobots()).thenReturn(ri);
+        when(rc.getLocation()).thenReturn(ml);
         landscaper.takeTurn();
     }
-
-    /* //This test is failing
     @Test
-    public void runLandscaper() throws GameActionException {
-        MapLocation ml = new MapLocation(1,1);
+    public void takeTurnwhenAdjacentToHQ() throws GameActionException {
+        MapLocation ml = new MapLocation(5,5);
+        RobotInfo[] ri = new RobotInfo[]{new RobotInfo(12, Team.A, RobotType.LANDSCAPER, 0, false, 0, 200, 0, ml)};
         when(rc.isReady()).thenReturn(true);
+        when(rc.senseNearbyRobots()).thenReturn(ri);
         when(rc.getLocation()).thenReturn(ml);
-        when(ml.isAdjacentTo(any())).thenReturn(true);
+        landscaper.takeTurn();
+    }
+*/
+
+    @Test
+    public void runLandscaperNotReady() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.isReady()).thenReturn(false);
         landscaper.runLandscaper();
-    } */
+    }
+
+    //ready and can move
+    @Test
+    public void runLandscaperReady1() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.getLocation()).thenReturn(new MapLocation(40,40));
+        when(rc.canMove(any())).thenReturn(true);
+        landscaper.runLandscaper();
+    }
+
+    //ready and can't move
+    @Test
+    public void runLandscaperReady2() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.getLocation()).thenReturn(new MapLocation(40,40));
+        when(rc.canMove(any())).thenReturn(false);
+        landscaper.runLandscaper();
+    }
+
+    //rc.canMove(Direction.EAST) == true
+    @Test
+    public void runLandscaperReady3() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.getLocation()).thenReturn(new MapLocation(40,40));
+        when(rc.canMove(any())).thenReturn(false);
+        when(rc.canMove(Direction.EAST)).thenReturn(true);
+        landscaper.runLandscaper();
+    }
+
+    //else == true
+    @Test
+    public void runLandscaperReady4() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.getLocation()).thenReturn(new MapLocation(40,40));
+        when(rc.canMove(any())).thenReturn(false);
+        when(rc.canMove(Direction.EAST)).thenReturn(false);
+        when(rc.canMove(Direction.WEST)).thenReturn(true);
+        landscaper.runLandscaper();
+    }
+
+    //adjacent to hq
+    @Test
+    public void runLandscaperReady5() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1, 1));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.getLocation()).thenReturn(new MapLocation(1, 2));
+        landscaper.runLandscaper();
+    }
+
+    //rc.getDirtCarrying() == 0
+    @Test
+    public void runLandscaperReady6() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1, 1));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.getLocation()).thenReturn(new MapLocation(1, 2));
+        when(rc.getDirtCarrying()).thenReturn(0);
+        when(rc.canDigDirt(any())).thenReturn(true);
+        landscaper.runLandscaper();
+    }
 
     @Test
     public void tryDigHQNull() throws GameActionException {
@@ -64,5 +138,9 @@ public class LandscaperTest {
     @Test
     public void getNextDirection() {
         assertEquals(landscaper.getNextDirection(Direction.NORTH), Direction.WEST);
+        assertEquals(landscaper.getNextDirection(Direction.WEST), Direction.SOUTH);
+        assertEquals(landscaper.getNextDirection(Direction.SOUTH), Direction.EAST);
+        assertEquals(landscaper.getNextDirection(Direction.EAST), Direction.NORTH);
+
     }
 }

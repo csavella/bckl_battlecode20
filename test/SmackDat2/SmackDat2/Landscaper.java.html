@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Landscaper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bckl_battlecode20$Sprint3UnitTesting.exec</a> &gt; <a href="index.source.html" class="el_package">SmackDat2</a> &gt; <span class="el_source">Landscaper.java</span></div><h1>Landscaper.java</h1><pre class="source lang-java linenums">package SmackDat2;
+
+import battlecode.common.*;
+
+import static SmackDat2.Communications.secretTeamKey;
+import static SmackDat2.Util.*;
+
+public class Landscaper extends Unit {
+
+
+    public Landscaper(RobotController r) {
+<span class="fc" id="L12">        super(r);</span>
+<span class="fc" id="L13">    }</span>
+
+    public void takeTurn() throws GameActionException {
+<span class="nc" id="L16">        super.takeTurn();</span>
+        //MapLocation HQLocation = getHQLocation();
+<span class="nc" id="L18">        runLandscaper();</span>
+<span class="nc" id="L19">    }</span>
+
+    void runLandscaper() throws GameActionException {
+<span class="fc" id="L22">        MapLocation HQLocation = comms.getHqLocFromBlockchain();</span>
+
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if(rc.isReady()) {</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">            if (!rc.getLocation().isAdjacentTo(HQLocation)) {</span>
+                //navigateTo or some version of it needs to be implemented using a pathfinding algorithm eventually,
+                //probably Djikstras or A*, Im just sticking a bandaid here for now
+                //navigateTo(HQLocation, rc.getLocation());
+<span class="fc" id="L29">                Direction t = rc.getLocation().directionTo(HQLocation);</span>
+<span class="fc" id="L30">                System.out.println(&quot;hi&quot;);</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">                if (rc.canMove(rc.getLocation().directionTo(HQLocation)))</span>
+<span class="fc" id="L32">                    rc.move(rc.getLocation().directionTo(HQLocation));</span>
+
+<span class="fc bfc" id="L34" title="All 2 branches covered.">                else if (rc.canMove(Direction.EAST))</span>
+<span class="fc" id="L35">                    rc.move(Direction.EAST);</span>
+
+                else
+<span class="fc bfc" id="L38" title="All 2 branches covered.">                    if (rc.canMove(Direction.WEST))</span>
+<span class="fc" id="L39">                        rc.move(Direction.WEST);</span>
+<span class="fc" id="L40">            }</span>
+            else {
+                //Figure out which of the 8 squares around the HQ it's on, so it knows where to take dirt from
+                //and where to place dirt at and then move to
+<span class="fc" id="L44">                MapLocation currentLocation = rc.getLocation();</span>
+<span class="fc" id="L45">                Direction directionFromHQ = null;</span>
+
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">                for (Direction d : directions) {</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">                    if (currentLocation.equals(HQLocation.add(d))) {</span>
+                        //TEST
+<span class="fc" id="L50">                        System.out.println(&quot;Landscaper is currently &quot; + d + &quot; of HQ.&quot;);</span>
+<span class="fc" id="L51">                        directionFromHQ = d;</span>
+<span class="fc" id="L52">                        break;</span>
+                    }
+                }
+
+<span class="fc" id="L56">                Direction nextDirection = getNextDirection(directionFromHQ);</span>
+
+<span class="fc" id="L58">                System.out.println(directionFromHQ.toString());</span>
+<span class="fc" id="L59">                System.out.println(nextDirection.toString());</span>
+
+                //If it doesn't have any dirt, pick up the dirt from a non-wall area
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">                if (rc.getDirtCarrying() == 0) {</span>
+<span class="pc bpc" id="L63" title="8 of 9 branches missed.">                    switch (directionFromHQ) {</span>
+                        case NORTH:
+<span class="fc bfc" id="L65" title="All 2 branches covered.">                            if(rc.canDigDirt(Direction.NORTH))</span>
+<span class="fc" id="L66">                                rc.digDirt(Direction.NORTH);</span>
+                        case NORTHWEST:
+<span class="fc bfc" id="L68" title="All 2 branches covered.">                            if(rc.canDigDirt(Direction.NORTH))</span>
+<span class="fc" id="L69">                                 rc.digDirt(Direction.NORTH);</span>
+                        case WEST:
+<span class="fc bfc" id="L71" title="All 2 branches covered.">                            if(rc.canDigDirt(Direction.WEST))</span>
+<span class="fc" id="L72">                                 rc.digDirt(Direction.WEST);</span>
+                        case SOUTHWEST:
+<span class="fc bfc" id="L74" title="All 2 branches covered.">                            if(rc.canDigDirt(Direction.WEST))</span>
+<span class="fc" id="L75">                                 rc.digDirt(Direction.WEST);</span>
+                        case SOUTH:
+<span class="fc bfc" id="L77" title="All 2 branches covered.">                            if(rc.canDigDirt(Direction.SOUTH))</span>
+<span class="fc" id="L78">                                rc.digDirt(Direction.SOUTH);</span>
+                        case SOUTHEAST:
+<span class="fc bfc" id="L80" title="All 2 branches covered.">                            if(rc.canDigDirt(Direction.SOUTH))</span>
+<span class="fc" id="L81">                                rc.digDirt(Direction.SOUTH);</span>
+                        case EAST:
+<span class="fc bfc" id="L83" title="All 2 branches covered.">                            if(rc.canDigDirt(Direction.EAST))</span>
+<span class="fc" id="L84">                                rc.digDirt(Direction.EAST);</span>
+                        case NORTHEAST:
+<span class="fc bfc" id="L86" title="All 2 branches covered.">                            if(rc.canDigDirt(Direction.EAST))</span>
+<span class="fc" id="L87">                                rc.digDirt(Direction.EAST);</span>
+                    }
+                }
+
+                //If the elevation below me is 1 higher than the next, move
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                else if(rc.senseElevation(rc.getLocation()) &gt; rc.senseElevation(rc.getLocation().add(nextDirection))){</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">                    if(rc.canMove(nextDirection))</span>
+<span class="nc" id="L94">                        rc.move(nextDirection);</span>
+                }
+
+                //Only thing left is to dump dirt beneath my feet
+                else{
+<span class="nc bnc" id="L99" title="All 2 branches missed.">                    if(rc.canDepositDirt(Direction.CENTER))</span>
+<span class="nc" id="L100">                        rc.depositDirt(Direction.CENTER);</span>
+                }
+            }
+        }
+<span class="fc" id="L104">    }</span>
+
+    protected Direction getNextDirection(Direction directionFromHQ) {
+        Direction nextDirection;
+<span class="pc bpc" id="L108" title="1 of 5 branches missed.">        switch(directionFromHQ){</span>
+            case NORTH:
+            case NORTHEAST:
+<span class="fc" id="L111">                nextDirection = Direction.WEST;</span>
+<span class="fc" id="L112">                break;</span>
+            case NORTHWEST:
+            case WEST:
+<span class="fc" id="L115">                nextDirection = Direction.SOUTH;</span>
+<span class="fc" id="L116">                break;</span>
+            case SOUTHWEST:
+            case SOUTH:
+<span class="fc" id="L119">                nextDirection = Direction.EAST;</span>
+<span class="fc" id="L120">                break;</span>
+            case SOUTHEAST:
+            case EAST:
+<span class="fc" id="L123">                nextDirection = Direction.NORTH;</span>
+<span class="fc" id="L124">                break;</span>
+            default:
+<span class="nc" id="L126">                throw new IllegalStateException(&quot;Unexpected value: &quot; + directionFromHQ);</span>
+        }
+<span class="fc" id="L128">        return nextDirection;</span>
+    }
+
+    /*MapLocation getHQLocation() throws GameActionException {
+        for (int i = 1; i &lt; rc.getRoundNum(); i++){
+            for(Transaction t : rc.getBlock(i)){
+                int[] message = t.getMessage();
+
+                //If the message uses our secret key and the message[1] field has 0 (HQLocation designator)
+                if(message[0] == secretTeamKey &amp;&amp; message[1] == 0){
+                    //TEST: System.out.println(&quot;I got a message&quot;);
+                    return new MapLocation(message[2], message[3]);
+                }
+            }
+        }
+
+        return new MapLocation(1, 1);
+    } */
+
+    boolean tryDig() throws GameActionException {
+        Direction dir;
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        if (hqLoc == null) {</span>
+<span class="fc" id="L150">            dir = Util.randomDirection();</span>
+        } else {
+<span class="fc" id="L152">            dir = hqLoc.directionTo(rc.getLocation());</span>
+        }
+<span class="fc bfc" id="L154" title="All 2 branches covered.">        if (rc.canDigDirt(dir)) {</span>
+<span class="fc" id="L155">            rc.digDirt(dir);</span>
+            //rc.setIndicatorDot(rc.getLocation().add(dir), 255, 0, 0);
+<span class="fc" id="L157">            return true;</span>
+        }
+<span class="fc" id="L159">        return false;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

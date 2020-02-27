@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RobotPlayer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bckl_battlecode20$Sprint3UnitTesting.exec</a> &gt; <a href="index.source.html" class="el_package">SmackDat2</a> &gt; <span class="el_source">RobotPlayer.java</span></div><h1>RobotPlayer.java</h1><pre class="source lang-java linenums">package SmackDat2;
+import battlecode.common.*;
+
+<span class="fc" id="L4">public strictfp class RobotPlayer {</span>
+    /**
+     * run() is the method that is called when a robot is instantiated in the Battlecode world.
+     * If this method returns, the robot dies!
+     **/
+    public static void run(RobotController rc) throws GameActionException {
+<span class="nc" id="L10">        Robot me = null;</span>
+
+<span class="nc bnc" id="L12" title="All 10 branches missed.">        switch (rc.getType()) {</span>
+<span class="nc" id="L13">            case HQ:                 me = new HQ(rc);           break;</span>
+<span class="nc" id="L14">            case MINER:              me = new Miner(rc);        break;</span>
+<span class="nc" id="L15">            case REFINERY:           me = new Refinery(rc);     break;</span>
+<span class="nc" id="L16">            case VAPORATOR:          me = new Vaporator(rc);    break;</span>
+<span class="nc" id="L17">            case DESIGN_SCHOOL:      me = new DesignSchool(rc); break;</span>
+<span class="nc" id="L18">            case FULFILLMENT_CENTER: me = new FulfillmentCenter(rc);     break;</span>
+<span class="nc" id="L19">            case LANDSCAPER:         me = new Landscaper(rc);   break;</span>
+<span class="nc" id="L20">            case DELIVERY_DRONE:     me = new DeliveryDrone(rc);         break;</span>
+<span class="nc" id="L21">            case NET_GUN:            me = new Shooter(rc);      break;</span>
+        }
+
+        while(true) {
+            try {
+<span class="nc" id="L26">                me.takeTurn();</span>
+
+                // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
+<span class="nc" id="L29">                Clock.yield();</span>
+<span class="nc" id="L30">            } catch (Exception e) {</span>
+<span class="nc" id="L31">                System.out.println(rc.getType() + &quot; Exception&quot;); // darn</span>
+<span class="nc" id="L32">                e.printStackTrace();</span>
+<span class="nc" id="L33">            }</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

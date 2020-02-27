@@ -2,8 +2,6 @@ package SmackDat2;
 
 import battlecode.common.*;
 
-
-
 public class DeliveryDrone extends Unit {
 
 
@@ -43,23 +41,26 @@ public class DeliveryDrone extends Unit {
                 }
 
                 RobotInfo[] robots = rc.senseNearbyRobots();
-
-                for (RobotInfo r : robots) {
-                    if (r.team == enemy || r.type == RobotType.COW) {
-                        if (rc.getLocation().isAdjacentTo(r.getLocation())) {
-                            if (rc.canPickUpUnit(r.getID())) {
-                                rc.pickUpUnit(r.getID());
-                                break;
+                if(robots != null) {
+                    for (RobotInfo r : robots) {
+                        if (r.team == enemy || r.type == RobotType.COW) {
+                            if (rc.getLocation().isAdjacentTo(r.getLocation())) {
+                                if (rc.canPickUpUnit(r.getID())) {
+                                    rc.pickUpUnit(r.getID());
+                                    break;
+                                }
                             }
                         }
                     }
                 }
                 //move to the enemy direction
-                for (RobotInfo r : robots) {
-                    if (r.team == enemy || r.type == RobotType.COW) {
-                        if(rc.canMove(rc.getLocation().directionTo(r.getLocation())))
-                            rc.move(rc.getLocation().directionTo(r.getLocation()));
-                        break;
+                if(robots != null) {
+                    for (RobotInfo r : robots) {
+                        if (r.team == enemy || r.type == RobotType.COW) {
+                            if (rc.canMove(rc.getLocation().directionTo(r.getLocation())))
+                                rc.move(rc.getLocation().directionTo(r.getLocation()));
+                            break;
+                        }
                     }
                 }
             }
@@ -111,7 +112,6 @@ public class DeliveryDrone extends Unit {
         }
 
         MapLocation hqLocation = comms.getHqLocFromBlockchain();
-
          if(rc.canMove(rc.getLocation().directionTo(hqLocation).opposite()))
              rc.move(rc.getLocation().directionTo(hqLocation).opposite());
     }

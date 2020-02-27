@@ -21,11 +21,13 @@ public class HQTest {
 
     @Test
     public void takeTurn() throws GameActionException {
+        MapLocation ml = new MapLocation(1,1);
+        RobotInfo fakeRobot = new RobotInfo(0,Team.A,RobotType.MINER,0,false,0,0,0,ml);
+        RobotInfo[] nearbyRobots = {fakeRobot};
         when(rc.getTeam()).thenReturn(Team.A);
         for (Direction dir : Util.directions)
             when(hqtest.tryBuild(RobotType.MINER,dir)).thenReturn(true);
-        when(rc.senseNearbyRobots()).thenReturn(new RobotInfo[0]);
+        when(rc.senseNearbyRobots()).thenReturn(nearbyRobots);
         hqtest.takeTurn();
-        //System.out.println();
     }
 }

@@ -1,8 +1,6 @@
 package SmackDat2;
 
-import battlecode.common.GameActionException;
-import battlecode.common.RobotController;
-import battlecode.common.Team;
+import battlecode.common.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +20,9 @@ public class ShooterTest {
 
     @Test
     public void takeTurn() throws GameActionException {
+        RobotInfo[] ri = new RobotInfo[]{mock(RobotInfo.class)};
         when(rc.getTeam()).thenReturn(Team.A);
+        when(rc.senseNearbyRobots(GameConstants.NET_GUN_SHOOT_RADIUS_SQUARED, Team.B)).thenReturn(ri);
         shoot.takeTurn();
     }
 }

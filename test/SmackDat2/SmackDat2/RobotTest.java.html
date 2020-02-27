@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RobotTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bckl_battlecode20$Sprint3UnitTesting.exec</a> &gt; <a href="index.source.html" class="el_package">SmackDat2</a> &gt; <span class="el_source">RobotTest.java</span></div><h1>RobotTest.java</h1><pre class="source lang-java linenums">package SmackDat2;
+
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import static org.mockito.Mockito.*;
+
+import battlecode.common.RobotController;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+<span class="fc" id="L13">public class RobotTest {</span>
+
+    private Robot testRobot;
+    private RobotController rc;
+
+    /* mock the robot controller and
+       create object for class that we're testing
+     */
+    @Before
+    public void init() {
+<span class="fc" id="L23">        rc = mock(RobotController.class);</span>
+<span class="fc" id="L24">        testRobot = new Robot(rc);</span>
+<span class="fc" id="L25">    }</span>
+
+    @Test
+    public void takeTurn() throws GameActionException {
+<span class="fc" id="L29">        testRobot.takeTurn();</span>
+<span class="fc" id="L30">        assertEquals(1, testRobot.turnCount);</span>
+<span class="fc" id="L31">    }</span>
+
+    /* two tests for tryBuild method
+       make sure both conditional statements execute properly
+     */
+    @Test
+    public void tryBuildFalse() throws GameActionException {
+<span class="fc" id="L38">        when(rc.isReady()).thenReturn(false);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        for (Direction dir : Util.directions)</span>
+<span class="fc" id="L40">            assertEquals(testRobot.tryBuild(rc.getType(), dir), false);</span>
+<span class="fc" id="L41">    }</span>
+    @Test
+    public void tryBuildTrue() throws GameActionException {
+<span class="fc" id="L44">        when(rc.isReady()).thenReturn(true);</span>
+<span class="fc" id="L45">        when(rc.canBuildRobot(any(), any())).thenReturn(true);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        for (Direction dir : Util.directions)</span>
+<span class="fc" id="L47">            assertEquals(testRobot.tryBuild(rc.getType(), dir), true);</span>
+<span class="fc" id="L48">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

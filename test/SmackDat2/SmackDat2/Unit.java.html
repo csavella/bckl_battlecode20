@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Unit.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bckl_battlecode20$Sprint3UnitTesting.exec</a> &gt; <a href="index.source.html" class="el_package">SmackDat2</a> &gt; <span class="el_source">Unit.java</span></div><h1>Unit.java</h1><pre class="source lang-java linenums">package SmackDat2;
+import battlecode.common.*;
+
+public class Unit extends Robot {
+
+    Navigation nav;
+
+    MapLocation hqLoc;
+
+    public Unit(RobotController r) {
+<span class="fc" id="L11">        super(r);</span>
+<span class="fc" id="L12">        nav = new Navigation(rc);</span>
+<span class="fc" id="L13">    }</span>
+
+    public void takeTurn() throws GameActionException {
+<span class="fc" id="L16">        super.takeTurn();</span>
+        
+<span class="fc" id="L18">        findHQ();</span>
+<span class="fc" id="L19">    }</span>
+
+    public void findHQ() throws GameActionException {
+<span class="fc bfc" id="L22" title="All 2 branches covered.">        if (hqLoc == null) {</span>
+            // search surroundings for HQ
+<span class="fc" id="L24">            RobotInfo[] robots = rc.senseNearbyRobots();</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">            for (RobotInfo robot : robots) {</span>
+<span class="pc bpc" id="L26" title="1 of 4 branches missed.">                if (robot.type == RobotType.HQ &amp;&amp; robot.team == rc.getTeam()) {</span>
+<span class="nc" id="L27">                    hqLoc = robot.location;</span>
+                }
+            }
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">            if(hqLoc == null) {</span>
+                // if still null, search the blockchain
+<span class="fc" id="L32">                hqLoc = comms.getHqLocFromBlockchain();</span>
+            }
+        }
+<span class="fc" id="L35">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

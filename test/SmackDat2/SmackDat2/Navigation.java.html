@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Navigation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bckl_battlecode20$Sprint3UnitTesting.exec</a> &gt; <a href="index.source.html" class="el_package">SmackDat2</a> &gt; <span class="el_source">Navigation.java</span></div><h1>Navigation.java</h1><pre class="source lang-java linenums">package SmackDat2;
+
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotController;
+
+public class Navigation {
+    RobotController rc;
+
+    // state related only to navigation should go here
+
+<span class="fc" id="L13">    public Navigation(RobotController r) {</span>
+<span class="fc" id="L14">        rc = r;</span>
+<span class="fc" id="L15">    }</span>
+    
+    /**
+     * Attempts to move in a given direction.
+     *
+     * @param dir The intended direction of movement
+     * @return true if a move was performed
+     * @throws GameActionException
+     */
+    boolean tryMove(Direction dir) throws GameActionException {
+<span class="pc bpc" id="L25" title="2 of 6 branches missed.">        if (rc.isReady() &amp;&amp; rc.canMove(dir) &amp;&amp; !rc.senseFlooding(rc.getLocation().add(dir))) {</span>
+<span class="fc" id="L26">            rc.move(dir);</span>
+<span class="fc" id="L27">            return true;</span>
+<span class="fc" id="L28">        } else return false;</span>
+    }
+
+    // tries to move in the general direction of dir
+    boolean goTo(Direction dir) throws GameActionException {
+<span class="fc" id="L33">        Direction[] toTry = {dir, dir.rotateLeft(), dir.rotateRight(), dir.rotateLeft().rotateLeft(), dir.rotateRight().rotateRight()};</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        for (Direction d : toTry){</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">            if(tryMove(d))</span>
+<span class="nc" id="L36">                return true;</span>
+        }
+<span class="fc" id="L38">        return false;</span>
+    }
+
+    // navigate towards a particular location
+    boolean goTo(MapLocation destination) throws GameActionException {
+<span class="nc" id="L43">        return goTo(rc.getLocation().directionTo(destination));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
