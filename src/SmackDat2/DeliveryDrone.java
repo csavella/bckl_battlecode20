@@ -2,8 +2,6 @@ package SmackDat2;
 
 import battlecode.common.*;
 
-
-
 public class DeliveryDrone extends Unit {
 
 
