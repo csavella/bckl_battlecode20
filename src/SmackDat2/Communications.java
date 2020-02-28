@@ -207,6 +207,74 @@ public class Communications {
         return false;
     }
 
+    //water key is 10009
+    public void broadcastWaterLocation(MapLocation loc) throws GameActionException {
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 10009;
+        message[2] = loc.x;
+        message[3] = loc.y;
+
+        if(rc.canSubmitTransaction(message, 2))
+            rc.submitTransaction(message, 2);
+    }
+
+    public MapLocation getWaterLocation() throws GameActionException{
+        for (int i = 1; i < rc.getRoundNum(); i++){
+            Transaction[] txs = rc.getBlock(i);
+            if(txs != null) {
+                for (Transaction t : txs) {
+                    int[] message = t.getMessage();
+                    if (message[0] == secretTeamKey && message[1] == 10009){
+                        int x = message[2];
+                        int y = message[3];
+                        return new MapLocation(x,y);
+                    }
+                }
+            }
+        }
+
+        return new MapLocation(0,0);
+    }
+
+    public boolean waterLocationKnown() throws GameActionException{
+        for (int i = 1; i < rc.getRoundNum(); i++){
+            Transaction[] txs = rc.getBlock(i);
+            if(txs != null) {
+                for (Transaction t : txs) {
+                    int[] message = t.getMessage();
+                    if (message[0] == secretTeamKey && message[1] == 10009)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //Code is 8897 for refinery
+    public boolean refineryExists() throws GameActionException{
+        for (int i = 1; i < rc.getRoundNum(); i++){
+            Transaction[] txs = rc.getBlock(i);
+            if(txs != null) {
+                for (Transaction t : txs) {
+                    int[] message = t.getMessage();
+                    if (message[0] == secretTeamKey && message[1] == 8897) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    //Code for refinery is 8897
+    public void broadcastRefineryExists() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 8897;
+
+        if(rc.canSubmitTransaction(message, 2))
+            rc.submitTransaction(message, 2);
+    }
+
     public void broadcastDesignSchoolExists() throws GameActionException{
         int [] message = new int[7];
         message[0] = secretTeamKey;
@@ -270,15 +338,16 @@ public class Communications {
         rc.submitTransaction(message, 2);
     }
 
-    public boolean landscaperExists() throws GameActionException {
+    public int landscaperExists() throws GameActionException {
+        int count = 0;
         for (int i = 1; i < rc.getRoundNum(); i++){
             for(Transaction t : rc.getBlock(i)){
                 int[] message = t.getMessage();
                 if(message[0] == secretTeamKey && message[1] == 199)
-                    return true;
+                    count+=1;
             }
         }
 
-        return false;
+        return count;
     }
 }

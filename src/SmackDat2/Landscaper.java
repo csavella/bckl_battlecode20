@@ -23,22 +23,32 @@ public class Landscaper extends Unit {
 
         if(rc.isReady()) {
             if (!rc.getLocation().isAdjacentTo(HQLocation)) {
-                //navigateTo or some version of it needs to be implemented using a pathfinding algorithm eventually,
-                //probably Djikstras or A*, Im just sticking a bandaid here for now
-                //navigateTo(HQLocation, rc.getLocation());
+
                 Direction t = rc.getLocation().directionTo(HQLocation);
                 System.out.println("hi");
                 if (rc.canMove(rc.getLocation().directionTo(HQLocation)))
                     rc.move(rc.getLocation().directionTo(HQLocation));
 
-                else if (rc.canMove(Direction.EAST))
-                    rc.move(Direction.EAST);
+                else if (rc.canMove(Direction.NORTH))
+                    rc.move(Direction.NORTH);
 
-                else
-                    if (rc.canMove(Direction.WEST))
-                        rc.move(Direction.WEST);
+                else if (rc.canMove(Direction.SOUTH))
+                    rc.move(Direction.SOUTH);
+
+                else if (rc.canMove(Direction.SOUTHEAST))
+                    rc.move(Direction.SOUTHEAST);
+
+                else if (rc.canMove(Direction.NORTHEAST))
+                    rc.move(Direction.NORTHEAST);
+
+                else if (rc.canMove(Direction.NORTHWEST))
+                    rc.move(Direction.NORTHWEST);
+
+                else if (rc.canMove(Direction.SOUTHWEST))
+                    rc.move(Direction.SOUTHWEST);
             }
-            else {
+
+            else if(rc.getRoundNum() > 150) {
                 //Figure out which of the 8 squares around the HQ it's on, so it knows where to take dirt from
                 //and where to place dirt at and then move to
                 MapLocation currentLocation = rc.getLocation();
@@ -46,8 +56,6 @@ public class Landscaper extends Unit {
 
                 for (Direction d : directions) {
                     if (currentLocation.equals(HQLocation.add(d))) {
-                        //TEST
-                        System.out.println("Landscaper is currently " + d + " of HQ.");
                         directionFromHQ = d;
                         break;
                     }
