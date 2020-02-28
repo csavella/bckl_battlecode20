@@ -19,10 +19,12 @@ public class Refinery extends Building {
     }
 
     public void runRefinery() throws GameActionException {
-        System.out.println("Pollution: " + rc.sensePollution(rc.getLocation()));
+        //System.out.println("Pollution: " + rc.sensePollution(rc.getLocation()));
+        if(!comms.refineryExists())
+            comms.broadcastRefineryExists();
 
         // Every 25 rounds broadcast location
-        if (rc.getRoundNum() % 25 == 0) {
+        else if (rc.getRoundNum() % 25 == 0) {
             comms.sendRefineryLocation(rc.getLocation());
         }
     }

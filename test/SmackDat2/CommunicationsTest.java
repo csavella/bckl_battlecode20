@@ -266,7 +266,7 @@ public class CommunicationsTest {
         Transaction[] txs = {tx};
         when(rc.getRoundNum()).thenReturn(2);
         when(rc.getBlock(1)).thenReturn(txs);
-        assertEquals(true, comms.landscaperExists());
+        assertEquals(1, comms.landscaperExists());
     }
 
     //go in for loop but drop out
@@ -281,7 +281,7 @@ public class CommunicationsTest {
         Transaction[] txs = {tx};
         when(rc.getRoundNum()).thenReturn(2);
         when(rc.getBlock(1)).thenReturn(txs);
-        assertEquals(false, comms.landscaperExists());
+        assertEquals(0, comms.landscaperExists());
     }
 
     //found other team's transaction block
@@ -296,7 +296,7 @@ public class CommunicationsTest {
         Transaction[] txs = {tx};
         when(rc.getRoundNum()).thenReturn(2);
         when(rc.getBlock(1)).thenReturn(txs);
-        assertEquals(false, comms.landscaperExists());
+        assertEquals(0, comms.landscaperExists());
     }
 
     //increment drone count

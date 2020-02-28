@@ -19,9 +19,9 @@ public class FulfillmentCenter extends Building {
         }
 
         for (Direction dir : Util.directions) {
-            if(comms.deliveryDroneCount() < 3 && tryBuild(RobotType.DELIVERY_DRONE, dir)) {
+            if(rc.getRoundNum() > 100 && comms.deliveryDroneCount() < 2 && tryBuild(RobotType.DELIVERY_DRONE, dir)) {
                 comms.broadcastDeliveryDrone();
-                System.out.println("made a delivery drone");
+                break;
             }
         }
     }}

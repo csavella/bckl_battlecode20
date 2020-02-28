@@ -22,7 +22,7 @@ public class Miner extends Unit {
     public void takeTurn() throws GameActionException {
         int switchMoveLogicTurnCount = 10;
         super.takeTurn();
-
+        MapLocation hqLocation = comms.getHqLocFromBlockchain();
         numDesignSchools += comms.getNewDesignSchoolCount();
         //numberOfFulfillmentCenters += comms.getNewBuildingCount();
 
@@ -44,7 +44,6 @@ public class Miner extends Unit {
 
         for (Direction dir : Util.directions)
             if (tryMine(dir)) {
-                System.out.println("I mined soup! " + rc.getSoupCarrying());
                 MapLocation soupLoc = rc.getLocation().add(dir);
                 if (!soupLocations.contains(soupLoc)) {
                     comms.broadcastSoupLocation(soupLoc);
@@ -53,46 +52,42 @@ public class Miner extends Unit {
         // mine first, then when full, deposit
         for (Direction dir : Util.directions)
             if (tryRefine(dir))
-                System.out.println("I refined soup! " + rc.getTeamSoup());
 
         findHQ();
         if (!rc.getLocation().isWithinDistanceSquared(hqLoc,9)) {
-            /*
-            if (numDesignSchools < 1) {
-                if (tryBuild(RobotType.DESIGN_SCHOOL, Util.randomDirection()))
-                    System.out.println("created a design school");
-            }
-            */
 
-            if(!comms.designSchoolExists()){
+            if(!comms.vaporatorExists() && !rc.getLocation().isWithinDistanceSquared(hqLoc,16))
+                tryBuild(RobotType.VAPORATOR, rc.getLocation().directionTo(hqLocation));
+
+            else if(!comms.designSchoolExists()){
                 for (Direction dir : directions) {
                     if (tryBuild(RobotType.DESIGN_SCHOOL, dir)) {
+                        comms.broadcastDesignSchoolExists();
                         break;
                     }
                 }
 
             }
 
-            if (!comms.fulfillmentCenterExists()) {
+            else if (!comms.fulfillmentCenterExists()) {
                 for (Direction dir : directions) {
                     if (tryBuild(RobotType.FULFILLMENT_CENTER, dir)) {
-                        System.out.println("Fulfillment center created!");
+                        comms.broadcastFulfillmentCenterExists();
+                        break;
                     }
                 }
             }
 
-            if (numberOfRefineries < 1) {
+            else if (!comms.refineryExists()) {
                 if (tryBuild(RobotType.REFINERY, Util.randomDirection())) {
-                    System.out.println("created a refinery");
-                    numberOfRefineries++;
+                    comms.broadcastRefineryExists();
                 }
             }
 
-            if(!comms.vaporatorExists())
-                tryBuild(RobotType.VAPORATOR, Util.randomDirection());
+
         }
 
-        if (rc.getRoundNum() > 300 && rc.getTeamSoup() > 255 && !comms.netGunHasBeenMade()) {
+        if (rc.getRoundNum() > 800 && rc.getTeamSoup() > 255 && !comms.netGunHasBeenMade()) {
             comms.broadcastNetgunMade();
             rc.buildRobot(RobotType.NET_GUN, Direction.CENTER);
         }

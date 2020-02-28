@@ -26,6 +26,31 @@ public class DeliveryDrone extends Unit {
 
         else if (rc.isReady()) {
 
+            RobotInfo[] robots = rc.senseNearbyRobots();
+            if(robots != null) {
+                for (RobotInfo r : robots) {
+                    if (r.team == enemy || r.type == RobotType.COW) {
+                        if (rc.getLocation().isAdjacentTo(r.getLocation())) {
+                            if (rc.canPickUpUnit(r.getID())) {
+                                rc.pickUpUnit(r.getID());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //move to the enemy direction
+            if(robots != null) {
+                for (RobotInfo r : robots) {
+                    if (r.team == enemy || r.type == RobotType.COW) {
+                        if (rc.canMove(rc.getLocation().directionTo(r.getLocation())))
+                            rc.move(rc.getLocation().directionTo(r.getLocation()));
+                        break;
+                    }
+                }
+            }
+
             //if too close to HQ, move away
             if (rc.getLocation().distanceSquaredTo(hqLocation) < 9) {
                 if (rc.canMove(rc.getLocation().directionTo(hqLocation).opposite()))
@@ -33,45 +58,30 @@ public class DeliveryDrone extends Unit {
             }
 
             else {
-                if(rc.getLocation().distanceSquaredTo(hqLocation) > 30) {
+                if(rc.getLocation().distanceSquaredTo(hqLocation) > 25) {
                     if (rc.canMove(rc.getLocation().directionTo(hqLocation))) {
                         rc.move(rc.getLocation().directionTo(hqLocation));
                         return;
                     }
                 }
 
-                RobotInfo[] robots = rc.senseNearbyRobots();
-                if(robots != null) {
-                    for (RobotInfo r : robots) {
-                        if (r.team == enemy || r.type == RobotType.COW) {
-                            if (rc.getLocation().isAdjacentTo(r.getLocation())) {
-                                if (rc.canPickUpUnit(r.getID())) {
-                                    rc.pickUpUnit(r.getID());
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                //move to the enemy direction
-                if(robots != null) {
-                    for (RobotInfo r : robots) {
-                        if (r.team == enemy || r.type == RobotType.COW) {
-                            if (rc.canMove(rc.getLocation().directionTo(r.getLocation())))
-                                rc.move(rc.getLocation().directionTo(r.getLocation()));
-                            break;
-                        }
-                    }
-                }
             }
         }
     }
 
      public void lookForWater(MapLocation loc) throws GameActionException {
         for(Direction dir : Direction.allDirections()) {
-            if (rc.senseFlooding(rc.getLocation().add(dir)))
+            if (rc.senseFlooding(rc.getLocation().add(dir))) {
+                comms.broadcastWaterLocation(rc.getLocation().add(dir));
                 rc.dropUnit(dir);
+            }
         }
+
+        if(comms.waterLocationKnown()) {
+            runToWater();
+            return;
+        }
+
         MapLocation start = loc.add(Direction.WEST).add(Direction.WEST).add(Direction.WEST)
                 .add(Direction.SOUTH).add(Direction.SOUTH).add(Direction.SOUTH);
 
@@ -114,5 +124,16 @@ public class DeliveryDrone extends Unit {
         MapLocation hqLocation = comms.getHqLocFromBlockchain();
          if(rc.canMove(rc.getLocation().directionTo(hqLocation).opposite()))
              rc.move(rc.getLocation().directionTo(hqLocation).opposite());
+    }
+
+    public void runToWater() throws GameActionException{
+        if(rc.canMove(rc.getLocation().directionTo(comms.getWaterLocation())))
+            rc.move(rc.getLocation().directionTo(comms.getWaterLocation()));
+
+        else if(rc.canMove(Direction.NORTH))
+            rc.move(Direction.NORTH);
+
+        else if(rc.canMove(Direction.SOUTH))
+            rc.move(Direction.SOUTH);
     }
 }
