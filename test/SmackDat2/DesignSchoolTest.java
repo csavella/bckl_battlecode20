@@ -21,9 +21,9 @@ public class DesignSchoolTest {
         dsTest = new DesignSchool(rc);
     }
 
-    @Test
-    public void takeTurn() throws GameActionException {
-        dsTest.comms.broadcastedCreation = true;
-        dsTest.takeTurn();
-    }
+//    @Test
+//    public void takeTurn() throws GameActionException {
+//        dsTest.comms.broadcastedCreation = true;
+//        dsTest.takeTurn();
+//    }
 }

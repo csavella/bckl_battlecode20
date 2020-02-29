@@ -124,8 +124,12 @@ public strictfp class RobotPlayer {
     static void runHQ() throws GameActionException {
 
         //At the start of the game send the HQ Location out onto the blockchain
-        if (rc.getRoundNum() < 5)
-            sendHQLocation(rc.getLocation());
+        if (rc.getRoundNum() < 5) {
+            int[] message = new int[]{5234,24,746,345,2345,21,3456};
+            rc.submitTransaction(message, 3);
+        }
+
+
 
 
         for (Direction dir : directions) {

@@ -20,8 +20,8 @@ public class FulfillmentCenterTest {
         fc.comms = mock(Communications.class);
     }
 
-    @Test
-    public void takeTurn() throws GameActionException {
-        fc.takeTurn();
-    }
+//    @Test
+//    public void takeTurn() throws GameActionException {
+//        fc.takeTurn();
+//    }
 }

@@ -11,8 +11,11 @@ public class HQ extends Shooter {
 
     public void takeTurn() throws GameActionException {
         super.takeTurn();
-        if(turnCount == 1) {
-            comms.sendHqLoc(rc.getLocation());
+        if(rc.getRoundNum() < 5 && rc.getRoundNum() > 1) {
+            comms.spamBlockChain();
+            for (int i = 0; i < 7; i++) {
+                System.out.println(comms.guessBlockchainArray[i]);
+            }
         }
 
         //Sense all robots near the HQ, if there is a drone from the enemy team in the radius,
@@ -26,16 +29,24 @@ public class HQ extends Shooter {
 
         }
 
-        // will only actually happen if we haven't already broadcast the creation
-        if(rc.getRoundNum() % 25 == 0){
-            comms.broadcastStats(comms.secretTeamKey,7,numMiners,rc.getLocation().x,rc.getLocation().y,comms.soupAmount);
-        }
+//        // will only actually happen if we haven't already broadcast the creation
+//        if(rc.getRoundNum() % 50 == 16 && rc.getRoundNum()>24){
+////            comms.broadcastStats(comms.secretTeamKey,7,numMiners,rc.getLocation().x,rc.getLocation().y,comms.soupAmount);
+//
+//            int [] commsArray;
+//            commsArray = comms.receiveCount(comms.secretTeamKey);
+//
+//            System.out.println("This is round " + rc.getRoundNum());
+//            for (int i = 0; i < 10; i++) {
+//                System.out.println(commsArray[i]);
+//            }
+//        }
 
-        if(comms.receiveCount(comms.secretTeamKey)[4] < comms.buildOrder[4]) {
-            for (Direction dir : Util.directions)
-                if(tryBuild(RobotType.MINER, dir)){
-                    numMiners++;
-                }
-        }
+//        if(numMiners < 5) {
+//            for (Direction dir : Util.directions)
+//                if(tryBuild(RobotType.MINER, dir)){
+//                    numMiners++;
+//                }
+//        }
     }
 }

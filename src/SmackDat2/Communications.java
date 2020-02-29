@@ -13,7 +13,7 @@ public class Communications {
     // state related only to communications should go here
 
     // all messages from our team should start with this so we can tell them apart
-    static final int secretTeamKey = 729384;
+    static final int secretTeamKey = 724;
     // the second entry in every message tells us what kind of message it is. e.g. 0 means it contains the HQ location
     static final String[] messageType = {
         "HQ loc",
@@ -21,8 +21,8 @@ public class Communications {
         "soup location",
     };
 
-    public int [] guessBlockchainArray = new int []{-1,-1,-1,-1,-1,-1,-1};
-    public int soupAmount = 4;
+    public int [] guessBlockchainArray = {-1,-1,-1,-1,-1,-1,-1};
+    public int soupAmount = 2;
 
     public int [] buildOrder = new int[] {1,1,1,1,4,4,4,1,0,0};
 
@@ -55,32 +55,45 @@ public class Communications {
     }
 
     public void guessBlockchain() throws GameActionException {
-        for (int i = 1; i < rc.getRoundNum(); i++){
+        for (int i = 1; i < rc.getRoundNum()-1; i++){
             for(Transaction tx : rc.getBlock(i)) {
                 int[] mess = tx.getMessage();
                     if(mess[0] != secretTeamKey){
                         for (int j = 0; j < 7; j++) {
                             guessBlockchainArray[j] = mess[j];
                         }
+                        return;
                     }
             }
         }
     }
 
     public void spamBlockChain() throws GameActionException {
+        boolean previousRound = false;
+
         if (guessBlockchainArray[0] == -1) {
             guessBlockchain();
         }
 
-        for (int i = 0; i < 7; i++){
-            for(int j = 0; j < 7; j++) {
+        for(Transaction tx : rc.getBlock(rc.getRoundNum()-1)) {
+            int[] mess = tx.getMessage();
+            if(mess[0] != secretTeamKey){
+                previousRound = true;
+                break;
+            }
+        }
+
+        if (guessBlockchainArray[0] != -1 && rc.getTeamSoup() > 50 && previousRound) {
+            for (int i = 0; i < 7; i++) {
                 int[] mess = new int[7];
-                if(i == j) {
-                    mess[j] = guessBlockchainArray[j];
-                } else {
-                    mess[j] = 64;
+                for (int j = 0; j < 7; j++) {
+                    if (i == j) {
+                        mess[j] = 64;
+                    } else {
+                        mess[j] = guessBlockchainArray[j];
+                    }
                 }
-                rc.submitTransaction(mess,soupAmount-1);
+                rc.submitTransaction(mess, soupAmount - 1);
             }
         }
     }
@@ -116,7 +129,7 @@ public class Communications {
 
         int[] message = new int[7];
         message[0] = secretTeamKey;
-        message[1] = 1;
+        message[1] = 21;
         message[2] = loc.x; // x coord of HQ
         message[3] = loc.y; // y coord of HQ
         if (rc.canSubmitTransaction(message, 3)) {
@@ -130,7 +143,7 @@ public class Communications {
         int count = 0;
         for(Transaction tx : rc.getBlock(rc.getRoundNum() - 1)) {
             int[] mess = tx.getMessage();
-            if(mess[0] == secretTeamKey && mess[1] == 1){
+            if(mess[0] == secretTeamKey && mess[1] == 21){
                 System.out.println("heard about a cool new school");
                 count += 1;
             }
@@ -164,7 +177,7 @@ public class Communications {
 
         int[] message = new int[7];
         message[0] = secretTeamKey;
-        message[1] = 2;
+        message[1] = 20;
         message[2] = loc.x; // x coord of HQ
         message[3] = loc.y; // y coord of HQ
         if (rc.canSubmitTransaction(message, 3)) {
@@ -176,58 +189,12 @@ public class Communications {
     public void updateSoupLocations(ArrayList<MapLocation> soupLocations) throws GameActionException {
         for(Transaction tx : rc.getBlock(rc.getRoundNum() - 1)) {
             int[] mess = tx.getMessage();
-            if(mess[0] == secretTeamKey && mess[1] == 2){
+            if(mess[0] == secretTeamKey && mess[1] == 20){
                 // TODO: don't add duplicate locations
                 System.out.println("heard about a tasty new soup location");
                 soupLocations.add(new MapLocation(mess[2], mess[3]));
             }
         }
-    }
-
-    public void sendRefineryLocation(MapLocation loc) throws GameActionException {
-        int[] message = new int[7];
-        message[0] = secretTeamKey;
-        message[1] = 2; //0 Designates it is Refinery Location
-        message[2] = loc.x;
-        message[3] = loc.y;
-
-        if (rc.canSubmitTransaction(message, 2)) {
-            rc.submitTransaction(message, 2);
-
-            System.out.println("I'm transmitting!");
-        }
-    }
-
-    // Receives locations
-    public int [][] getRefineryLocations() throws GameActionException {
-        // Create array of positions of refineries (at most 10)
-        int[][] positions = new int[10][];
-
-        // Dynamically allocate space
-        for (int i = 0; i < 10; i++) {
-            positions[i] = new int[2];
-            positions[i][0] = 0;
-            positions[i][1] = 0;
-        }
-
-        for (int i = rc.getRoundNum(); i > rc.getRoundNum() - 26; i-- ) {
-
-            int index = 0;
-
-            for (Transaction t : rc.getBlock(i)) {
-                int[] message = t.getMessage();
-
-                //If the message uses our secret key and the message[1] field has 0 (HQLocation designator)
-                if (message[0] == secretTeamKey && message[1] == 2) {
-                    //TEST: System.out.println("I got a message");
-                    positions[index][0] = message[2];
-                    positions[index][1] = message[3];
-                    index += 1;
-                }
-            }
-        }
-
-        return positions;
     }
 
 
@@ -308,33 +275,35 @@ public class Communications {
         for (int i = 0; i < 10; i++) {
             counts[i] = 0;
         }
+        if(rc.getRoundNum()>25) {
 
-        for (int i = rc.getRoundNum(); i > rc.getRoundNum() - 25; i-- ) {
-            for (Transaction t : rc.getBlock(i)) {
-                int[] message = t.getMessage();
 
-                if (message[0] == secretTeamKey) {
-                    int unitCode = message[1];
-                    if (unitCode == 7) {
-                        // It's an HQ making miners
-                        counts[unitCode] += 1;
-                        counts[4] += message[2];
-                    } else if (unitCode == 2) {
-                        // It's a design center making landscapers
-                        counts[unitCode] += 1;
-                        counts[5] += message[2];
-                    } else if (unitCode == 3) {
-                        // It's a fulfillment center making drones
-                        counts[unitCode] += 1;
-                        counts[6] += message[2];
-                    } else {
-                        counts[unitCode] += 1;
+            for (int i = rc.getRoundNum() - 1; i > rc.getRoundNum() - 51; i--) {
+                for (Transaction t : rc.getBlock(i)) {
+                    int[] message = t.getMessage();
+
+                    if (message[0] == secretTeamKey && message[1] < 10) {
+                        int unitCode = message[1];
+                        if (unitCode == 7) {
+                            // It's an HQ making miners
+                            counts[unitCode] += 1;
+                            counts[4] += message[2];
+                        } else if (unitCode == 2) {
+                            // It's a design center making landscapers
+                            counts[unitCode] += 1;
+                            counts[5] += message[2];
+                        } else if (unitCode == 3) {
+                            // It's a fulfillment center making drones
+                            counts[unitCode] += 1;
+                            counts[6] += message[2];
+                        } else {
+                            counts[unitCode] += 1;
+                        }
+
                     }
-
                 }
             }
         }
-
         return counts;
     }
 
@@ -350,7 +319,7 @@ public class Communications {
             positions[i][1] = 0;
         }
 
-        for (int i = rc.getRoundNum(); i > rc.getRoundNum() - 25; i-- ) {
+        for (int i = rc.getRoundNum()-1; i > rc.getRoundNum() - 51; i-- ) {
 
             int index = 0;
 

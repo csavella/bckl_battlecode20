@@ -19,14 +19,15 @@ public class DesignSchool extends Building {
         int landscapers = 0;
 
         // will only actually happen if we haven't already broadcast the creation
-        if(rc.getRoundNum() % 25 == 1){
-            comms.broadcastStats(comms.secretTeamKey,5,landscapers,rc.getLocation().x,rc.getLocation().y,comms.soupAmount);
+        if(rc.getRoundNum() % 50 == 1){
+            System.out.println("Broadcasting" + landscapers);
+            comms.broadcastStats(comms.secretTeamKey,2,landscapers,rc.getLocation().x,rc.getLocation().y,comms.soupAmount);
         }
 
         for (Direction dir : Util.directions) {
-            if(comms.receiveCount(comms.secretTeamKey)[5] < comms.buildOrder[5] && tryBuild(RobotType.LANDSCAPER, dir)) {
+            if(tryBuild(RobotType.LANDSCAPER, dir)) {
                 comms.broadcastLandscaperExists();
-                System.out.println("made a landscaper");
+                System.out.println("made a landscaper" + landscapers);
                 landscapers++;
             }
         }
