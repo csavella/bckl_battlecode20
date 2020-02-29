@@ -25,6 +25,53 @@ public class Communications {
         rc = r;
     }
 
+    public int [] guessBlockchainArray = {-1,-1,-1,-1,-1,-1,-1};
+
+    public void guessBlockchain() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum()-1; i++){
+            for(Transaction tx : rc.getBlock(i)) {
+                int[] mess = tx.getMessage();
+                if(mess[0] != secretTeamKey){
+                    for (int j = 0; j < 7; j++) {
+                        guessBlockchainArray[j] = mess[j];
+                    }
+                    return;
+                }
+            }
+        }
+    }
+
+    public void spamBlockChain() throws GameActionException {
+        boolean previousRound = false;
+
+        if (guessBlockchainArray[0] == -1) {
+            guessBlockchain();
+        }
+
+        for(Transaction tx : rc.getBlock(rc.getRoundNum()-1)) {
+            int[] mess = tx.getMessage();
+            if(mess[0] != secretTeamKey){
+                previousRound = true;
+                break;
+            }
+        }
+
+        if (guessBlockchainArray[0] != -1 && rc.getTeamSoup() > 50 && previousRound) {
+            for (int i = 0; i < 7; i++) {
+                int[] mess = new int[7];
+                for (int j = 0; j < 7; j++) {
+                    if (i == j) {
+                        mess[j] = 64;
+                    } else {
+                        mess[j] = guessBlockchainArray[j];
+                    }
+                }
+                rc.submitTransaction(mess, 1);
+            }
+        }
+    }
+
+
     public void sendHqLoc(MapLocation loc) throws GameActionException {
         int[] message = new int[7];
         message[0] = secretTeamKey;
