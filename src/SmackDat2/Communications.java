@@ -56,7 +56,7 @@ public class Communications {
             }
         }
 
-        if (guessBlockchainArray[0] != -1 && rc.getTeamSoup() > 50 && previousRound) {
+        if (guessBlockchainArray[0] != -1 && rc.getTeamSoup() > 50 && previousRound && rc.getRoundNum()>300) {
             for (int i = 0; i < 7; i++) {
                 int[] mess = new int[7];
                 for (int j = 0; j < 7; j++) {
