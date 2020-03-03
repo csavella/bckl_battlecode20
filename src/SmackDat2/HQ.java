@@ -32,5 +32,7 @@ public class HQ extends Shooter {
                     numMiners++;
                 }
         }
+
+        comms.spamBlockChain();
     }
 }
