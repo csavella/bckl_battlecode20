@@ -24,4 +24,18 @@ public class FulfillmentCenterTest {
     public void takeTurn() throws GameActionException {
         fc.takeTurn();
     }
+
+    @Test
+    public void takeTurnExists() throws GameActionException {
+        when(fc.comms.fulfillmentCenterExists()).thenReturn(true);
+        fc.takeTurn();
+    }
+
+    @Test
+    public void takeTurnRound101() throws GameActionException {
+        when(fc.comms.fulfillmentCenterExists()).thenReturn(true);
+        when(rc.getRoundNum()).thenReturn(101);
+        fc.takeTurn();
+    }
+
 }

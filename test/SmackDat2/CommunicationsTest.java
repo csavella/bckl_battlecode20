@@ -4,6 +4,9 @@ import battlecode.common.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import static SmackDat2.Communications.secretTeamKey;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -42,40 +45,13 @@ public class CommunicationsTest {
         when(rc.canSubmitTransaction(message,3)).thenReturn(false);
         comms.sendHqLoc(new MapLocation(1,1));
     }
-    /*
-    public MapLocation getHqLocFromBlockchain() throws GameActionException {
-        for (int i = 1; i < rc.getRoundNum(); i++){
-            for(Transaction tx : rc.getBlock(i)) {
-                int[] mess = tx.getMessage();
-                if(mess[0] == secretTeamKey && mess[1] == 0){
-                    System.out.println("found the HQ!");
-                    return new MapLocation(mess[2], mess[3]);
-                }
-            }
-        }
-        return new MapLocation(1,1);
-    }*/
 
     @Test
-    public void getHqLocFromBlockchain1() throws GameActionException {
+    public void getHqLocFromBlockchain() throws GameActionException {
         when(rc.getRoundNum()).thenReturn(1);
         assertEquals(comms.getHqLocFromBlockchain(), new MapLocation(1,1));
     }
-/*
-    @Test
-    public void getHqLocFromBlockchain2() throws GameActionException {
-        int[] message = new int[7];
-        message[0] = secretTeamKey;
-        message[1] = 0; // 0 Designates to HQ Location
-        message[2] = 1; // x coord of HQ
-        message[3] = 1; // y coord of HQ
-        Transaction tx = new Transaction(5,message,1);
-        Transaction[] txs = new Transaction[]{tx};
-        when(rc.getRoundNum()).thenReturn(2);
-        when(rc.getBlock(any())).thenReturn(txs);
-        assertNotEquals(comms.getHqLocFromBlockchain(), new MapLocation(1,1));
-    }
-*/
+
     //can broadcast
     @Test
     public void broadcastDesignSchoolCreation1() throws GameActionException {
@@ -86,6 +62,7 @@ public class CommunicationsTest {
         message[3] = 1; // y coord of HQ
         when(rc.canSubmitTransaction(message, 3)).thenReturn(true);
         comms.broadcastDesignSchoolCreation(new MapLocation(0,1));
+        assertEquals(true, comms.broadcastedCreation);
     }
 
     //can't broadcast
@@ -98,6 +75,7 @@ public class CommunicationsTest {
         message[3] = 1; // y coord of HQ
         when(rc.canSubmitTransaction(message, 3)).thenReturn(false);
         comms.broadcastDesignSchoolCreation(new MapLocation(0,1));
+        assertEquals(false, comms.broadcastedCreation);
     }
 
     //can broadcast
@@ -252,7 +230,7 @@ public class CommunicationsTest {
     @Test
     public void landscaperExistsFalse1() throws GameActionException {
         when(rc.getRoundNum()).thenReturn(1);
-        comms.landscaperExists();
+        assertEquals(0,comms.landscaperExists());
     }
 
     @Test
@@ -358,7 +336,7 @@ public class CommunicationsTest {
         assertEquals(true, comms.fulfillmentCenterExists());
     }
 
-
+    //uses fulfillment center code 77
     @Test
     public void fulfillmentCenterExistsFalse1() throws GameActionException {
         int[] message = new int[7];
@@ -373,6 +351,7 @@ public class CommunicationsTest {
         assertEquals(false, comms.fulfillmentCenterExists());
     }
 
+    //does not use fulfillment center code
     @Test
     public void fulfillmentCenterExistsFalse2() throws GameActionException {
         int[] message = new int[7];
@@ -401,6 +380,7 @@ public class CommunicationsTest {
         assertEquals(true,comms.designSchoolExists());
     }
 
+    //des not use design code key 1877
     @Test
     public void designSchoolExistsFalse1() throws GameActionException {
         int[] message = new int[7];
@@ -415,6 +395,7 @@ public class CommunicationsTest {
         assertEquals(false,comms.designSchoolExists());
     }
 
+    //not our team key
     @Test
     public void designSchoolExistsFalse2() throws GameActionException {
         int[] message = new int[7];
@@ -427,5 +408,180 @@ public class CommunicationsTest {
         when(rc.getRoundNum()).thenReturn(3);
         when(rc.getBlock(1)).thenReturn(txs);
         assertEquals(false,comms.designSchoolExists());
+    }
+
+    @Test
+    public void broadcastWaterLocationTrue() throws GameActionException {
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 10009;
+        message[2] = 2;
+        message[3] = 2;
+        when(rc.canSubmitTransaction(message, 2)).thenReturn(true);
+        comms.broadcastWaterLocation(new MapLocation(2,2));
+    }
+
+    @Test
+    public void broadcastWaterLocationFalse() throws GameActionException {
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 10009;
+        message[2] = 2;
+        message[3] = 2;
+        when(rc.canSubmitTransaction(message, 2)).thenReturn(false);
+        comms.broadcastWaterLocation(new MapLocation(2,2));
+    }
+
+    @Test
+    public void broadcastRefineryExistsTrue() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 8897;
+        when(rc.canSubmitTransaction(message, 2)).thenReturn(true);
+        comms.broadcastRefineryExists();
+    }
+
+    @Test
+    public void broadcastRefineryExistsFalse() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 8897;
+        when(rc.canSubmitTransaction(message, 2)).thenReturn(false);
+        comms.broadcastRefineryExists();
+    }
+
+    @Test
+    public void refineryExistsFalse() throws GameActionException{
+        when(rc.getRoundNum()).thenReturn(1);
+        assertEquals(false, comms.refineryExists());
+    }
+
+    @Test
+    public void refineryExistsTrue() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 8897;
+        Transaction tx = new Transaction(1,message,2);
+        Transaction[] txs = {tx};
+
+        when(rc.getRoundNum()).thenReturn(2);
+        when(rc.getBlock(1)).thenReturn(txs);
+        assertEquals(true, comms.refineryExists());
+    }
+
+    //wrong team key
+    @Test
+    public void refineryExistsFalse1() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey+1;
+        message[1] = 8897;
+        Transaction tx = new Transaction(1,message,2);
+        Transaction[] txs = {tx};
+
+        when(rc.getRoundNum()).thenReturn(2);
+        when(rc.getBlock(1)).thenReturn(txs);
+        assertEquals(false, comms.refineryExists());
+    }
+
+    //not refinery code
+    @Test
+    public void refineryExistsFalse2() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 889;
+        Transaction tx = new Transaction(1,message,2);
+        Transaction[] txs = {tx};
+
+        when(rc.getRoundNum()).thenReturn(2);
+        when(rc.getBlock(1)).thenReturn(txs);
+        assertEquals(false, comms.refineryExists());
+    }
+
+    @Test
+    public void refineryExistsNull() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 8897;
+        //Transaction tx = new Transaction(1,message,2);
+        Transaction[] txs = null;
+
+        when(rc.getRoundNum()).thenReturn(2);
+        when(rc.getBlock(1)).thenReturn(txs);
+        assertEquals(false,comms.refineryExists());
+    }
+
+    @Test
+    public void waterLocationKnownTrue() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 10009;
+        Transaction tx = new Transaction(1,message,2);
+        Transaction[] txs = {tx};
+        when(rc.getRoundNum()).thenReturn(2);
+        when(rc.getBlock(1)).thenReturn(txs);
+        assertEquals(true,comms.waterLocationKnown());
+    }
+
+    //no transactions
+    @Test
+    public void waterLocationKnownFalse1() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 10009;
+        Transaction[] txs = null;
+        when(rc.getRoundNum()).thenReturn(2);
+        when(rc.getBlock(1)).thenReturn(txs);
+        assertEquals(false,comms.waterLocationKnown());
+    }
+
+    //not water location key
+    @Test
+    public void waterLocationKnownFalse2() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey;
+        message[1] = 1000;
+        Transaction tx = new Transaction(1,message,2);
+        Transaction[] txs = {tx};
+        when(rc.getRoundNum()).thenReturn(2);
+        when(rc.getBlock(1)).thenReturn(txs);
+        assertEquals(false, comms.waterLocationKnown());
+    }
+
+    //not team key
+    @Test
+    public void waterLocationKnownFalse3() throws GameActionException{
+        int [] message = new int[7];
+        message[0] = secretTeamKey+1;
+        message[1] = 10009;
+        Transaction tx = new Transaction(1,message,2);
+        Transaction[] txs = {tx};
+        when(rc.getRoundNum()).thenReturn(2);
+        when(rc.getBlock(1)).thenReturn(txs);
+        assertEquals(false,comms.waterLocationKnown());
+    }
+
+    //only first round
+    @Test
+    public void waterLocationKnownFalse() throws GameActionException{
+        when(rc.getRoundNum()).thenReturn(1);
+        assertEquals(false,comms.waterLocationKnown());
+    }
+
+    @Test
+    public void guessBlockchainNoLoop() throws GameActionException {
+        when(rc.getRoundNum()).thenReturn(1);
+        comms.guessBlockchain();
+    }
+
+    @Test
+    public void guessBlockchainLoop() throws GameActionException {
+        int [] message = new int[7];
+        message[0] = secretTeamKey+1;
+        message[1] = 10009;
+        Transaction tx = new Transaction(1,message,2);
+        Transaction[] txs = {tx};
+        when(rc.getRoundNum()).thenReturn(5);
+        when(rc.getBlock(1)).thenReturn(txs);
+        comms.guessBlockchain();
     }
 }

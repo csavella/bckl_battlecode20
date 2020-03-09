@@ -18,26 +18,6 @@ public class LandscaperTest {
         landscaper = new Landscaper(rc);
         landscaper.comms = mock(Communications.class);
     }
-/*
-    @Test
-    public void takeTurn() throws GameActionException {
-        MapLocation ml = new MapLocation(50,50);
-        RobotInfo[] ri = new RobotInfo[]{new RobotInfo(12, Team.A, RobotType.LANDSCAPER, 0, false, 0, 200, 0, ml)};
-        when(rc.isReady()).thenReturn(true);
-        when(rc.senseNearbyRobots()).thenReturn(ri);
-        when(rc.getLocation()).thenReturn(ml);
-        landscaper.takeTurn();
-    }
-    @Test
-    public void takeTurnwhenAdjacentToHQ() throws GameActionException {
-        MapLocation ml = new MapLocation(5,5);
-        RobotInfo[] ri = new RobotInfo[]{new RobotInfo(12, Team.A, RobotType.LANDSCAPER, 0, false, 0, 200, 0, ml)};
-        when(rc.isReady()).thenReturn(true);
-        when(rc.senseNearbyRobots()).thenReturn(ri);
-        when(rc.getLocation()).thenReturn(ml);
-        landscaper.takeTurn();
-    }
-*/
 
     @Test
     public void runLandscaperNotReady() throws GameActionException {
@@ -142,5 +122,74 @@ public class LandscaperTest {
         assertEquals(landscaper.getNextDirection(Direction.SOUTH), Direction.EAST);
         assertEquals(landscaper.getNextDirection(Direction.EAST), Direction.NORTH);
 
+    }
+
+    @Test
+    public void runLandscaperNorth() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.getLocation()).thenReturn(new MapLocation(40,40));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.canMove(any())).thenReturn(false);
+        when(rc.canMove(Direction.NORTH)).thenReturn(true);
+        landscaper.runLandscaper();
+    }
+
+    @Test
+    public void runLandscaperSouth() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.getLocation()).thenReturn(new MapLocation(40,40));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.canMove(any())).thenReturn(false);
+        when(rc.canMove(Direction.SOUTH)).thenReturn(true);
+        landscaper.runLandscaper();
+    }
+
+    @Test
+    public void runLandscaperSouthEast() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.getLocation()).thenReturn(new MapLocation(40,40));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.canMove(any())).thenReturn(false);
+        when(rc.canMove(Direction.SOUTHEAST)).thenReturn(true);
+        landscaper.runLandscaper();
+    }
+
+    @Test
+    public void runLandscaperNorthEast() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.getLocation()).thenReturn(new MapLocation(40,40));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.canMove(any())).thenReturn(false);
+        when(rc.canMove(Direction.NORTHEAST)).thenReturn(true);
+        landscaper.runLandscaper();
+    }
+
+    @Test
+    public void runLandscaperSouthWest() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.getLocation()).thenReturn(new MapLocation(40,40));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.canMove(any())).thenReturn(false);
+        when(rc.canMove(Direction.SOUTHWEST)).thenReturn(true);
+        landscaper.runLandscaper();
+    }
+
+    @Test
+    public void runLandscaperNorthWest() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.getLocation()).thenReturn(new MapLocation(40,40));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.canMove(any())).thenReturn(false);
+        when(rc.canMove(Direction.NORTHWEST)).thenReturn(true);
+        landscaper.runLandscaper();
+    }
+
+    @Test
+    public void runLandscaperNotReadyRound151() throws GameActionException {
+        when(landscaper.comms.getHqLocFromBlockchain()).thenReturn(new MapLocation(1,1));
+        when(rc.getLocation()).thenReturn(new MapLocation(1,2));
+        when(rc.isReady()).thenReturn(true);
+        when(rc.getRoundNum()).thenReturn(151);
+        landscaper.runLandscaper();
     }
 }

@@ -35,4 +35,10 @@ public class RefineryTest {
         when(rc.getRoundNum()).thenReturn(49);
         ref.runRefinery();
     }
+
+    @Test
+    public void runRefineryExists() throws GameActionException {
+        when(ref.comms.refineryExists()).thenReturn(true);
+        ref.runRefinery();
+    }
 }
